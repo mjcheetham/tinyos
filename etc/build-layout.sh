@@ -12,6 +12,6 @@ OUT_ISO=$OUT/iso
 
 # Build layout
 mkdir -p $OUT_ISO/boot/grub
-cp $SRC/boot/menu.lst $OUT_ISO/boot/grub/
+cp $ETC/menu.lst $OUT_ISO/boot/grub/
 cp $PKG/grubstage2/stage2_eltorito $OUT_ISO/boot/grub/
-cp $OUT_BIN/kernel.elf $OUT_ISO/boot/
+cp $OUT_BIN/kernel $OUT_ISO/boot/
