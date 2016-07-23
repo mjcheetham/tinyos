@@ -46,7 +46,7 @@ $(OUT)/os.iso: $(OUT_BIN)/kernel
 	$(ETC)/build-layout.sh
 	$(ETC)/build-iso.sh
 
-$(OUT_BIN)/kernel: $(OUT_OBJ)/boot.o $(OUT_OBJ)/kmain.o
+$(OUT_BIN)/kernel: $(OUT_OBJ)/boot.o $(OUT_OBJ)/kmain.o $(OUT_OBJ)/fb.o
 	mkdir -p $(OUT_BIN)
 	ld $(LDFLAGS) $^ -o $@
 
@@ -55,5 +55,9 @@ $(OUT_OBJ)/boot.o: $(SRC)/boot.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 $(OUT_OBJ)/kmain.o: $(SRC)/kmain.c
+	mkdir -p $(OUT_OBJ)
+	$(CC) $(CFLAGS) $< -o $@
+
+$(OUT_OBJ)/fb.o: $(SRC)/fb.c
 	mkdir -p $(OUT_OBJ)
 	$(CC) $(CFLAGS) $< -o $@
