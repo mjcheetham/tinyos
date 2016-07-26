@@ -1,3 +1,5 @@
+#pragma once
+
 typedef enum
 {
 	FBCOLOR_BLACK    = 0,
