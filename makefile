@@ -27,7 +27,7 @@ ASFLAGS  = -f elf32
 # Phony targets #
 #################
 
-.PHONY: iso run outdir clean
+.PHONY: iso run clean
 
 iso: $(OUT)/os.iso
 
