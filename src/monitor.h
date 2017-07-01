@@ -27,10 +27,22 @@ typedef enum
 } FBCOLOR;
 
 // Write a single character to the monitor
-void monitor_put(char c, FBCOLOR fg, FBCOLOR bg);
+void monitor_put(char c);
 
 // Write a null-terminated string to the monitor
-void monitor_write(char *str, FBCOLOR fg, FBCOLOR bg);
+void monitor_write(char *str);
+
+// Write a null-terminated string to the monitor followed by a new line
+void monitor_writeline(char *str);
+
+// Write an integer as a hexadecimal number to the monitor
+void monitor_write_hex(uint64 i);
 
 // Clear the monitor
 void monitor_clear();
+
+// Set the foreground and background colours
+void monitor_color_set(FBCOLOR fg, FBCOLOR bg);
+
+// Reset the forground and background colour
+void monitor_color_reset();

@@ -1,9 +1,11 @@
 #include "monitor.h"
 #include "system.h"
 
-uint16 *fb = (uint16 *) 0x000B8000;
-uint8 cursor_x = 0;
-uint8 cursor_y = 0;
+static uint16 *fb = (uint16 *) 0x000B8000;
+static uint8 cursor_x = 0;
+static uint8 cursor_y = 0;
+static FBCOLOR color_fg = FBCOLOR_LGREY;
+static FBCOLOR color_bg = FBCOLOR_BLACK;
 
 // Blank character
 static const uint16 BLANK = 0x20 /*space*/ | (((FBCOLOR_BLACK << 4) | (FBCOLOR_WHITE & 0x0F)) << 8);
@@ -43,7 +45,7 @@ static void scroll()
 	cursor_y = FB_HEIGHT - 1;
 }
 
-void monitor_put(char c, FBCOLOR fg, FBCOLOR bg)
+void monitor_put(char c)
 {
 	// Backspace => move back one
 	if (c == 0x08 && cursor_x > 0)
@@ -69,7 +71,7 @@ void monitor_put(char c, FBCOLOR fg, FBCOLOR bg)
 	else if (c >= ' ')
 	{
 		// Calculate the position and colour bits
-		uint8 color = (bg << 4) | (fg & 0x0F);
+		uint8 color = (color_bg << 4) | (color_fg & 0x0F);
 		uint16 pos = cursor_y * FB_WIDTH + cursor_x;
 
 		// Write character to framebuffer
@@ -96,14 +98,50 @@ void monitor_put(char c, FBCOLOR fg, FBCOLOR bg)
 	update_cursor();
 }
 
-void monitor_write(char *str, FBCOLOR fg, FBCOLOR bg)
+void monitor_write(char *str)
 {
 	// TODO: handle str longer than 32-bits
 	//       and/or a non-null terminated string
 	uint32 i = 0;
 	while(str[i])
 	{
-		monitor_put(str[i++], fg, bg);
+		monitor_put(str[i++]);
+	}
+}
+
+void monitor_writeline(char *str)
+{
+	monitor_write(str);
+	monitor_write("\r\n");
+}
+
+void monitor_write_hex(uint64 i)
+{
+	// Display 8 chars if only 32-bit value or less
+	uint8 len = 7;
+	if (i > 0xFFFFFFFF)
+	{
+		len = 15;
+	}
+
+	monitor_write("0x");
+	for (int8 j = len; j >= 0; j--)
+	{
+		uint32 digit = (i >> j*4) & 0xF;
+		if (digit < 0xA)
+		{
+			monitor_put(digit + '0');
+		}
+		else
+		{
+			monitor_put(digit - 0xA + 'a');
+		}
+
+		// Add separator between DWORDs
+		if (j == 8)
+		{
+			monitor_put('_');
+		}
 	}
 }
 
@@ -119,4 +157,15 @@ void monitor_clear()
 	cursor_x = 0;
 	cursor_y = 0;
 	update_cursor();
+}
+
+void monitor_color_set(FBCOLOR fg, FBCOLOR bg)
+{
+	color_fg = fg;
+	color_bg = bg;
+}
+
+void monitor_color_reset()
+{
+	monitor_color_set(FBCOLOR_LGREY, FBCOLOR_BLACK);
 }
