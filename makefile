@@ -46,7 +46,7 @@ $(OUT)/os.iso: $(OUT_BIN)/kernel
 	$(ETC)/build-layout.sh
 	$(ETC)/build-iso.sh
 
-$(OUT_BIN)/kernel: $(OUT_OBJ)/boot.o $(OUT_OBJ)/kmain.o $(OUT_OBJ)/system.o $(OUT_OBJ)/fb.o
+$(OUT_BIN)/kernel: $(OUT_OBJ)/boot.o $(OUT_OBJ)/kmain.o $(OUT_OBJ)/system.o $(OUT_OBJ)/monitor.o
 	mkdir -p $(OUT_BIN)
 	ld $(LDFLAGS) $^ -o $@
 
