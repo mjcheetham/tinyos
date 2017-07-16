@@ -1,18 +1,23 @@
 #include "system.h"
 
-void memcpy(byte *dest, byte *src, int32 count)
+void memcpy(byte *dest, const byte *src, uint32 length)
 {
-	for(; count != 0; count--)
+	const byte *srcPtr = (const byte *)src;
+	byte *destPtr = (byte *)dest;
+
+	for(; length != 0; length--)
 	{
-		*dest++ = *src++;
+		*destPtr++ = *srcPtr++;
 	}
 }
 
-void memset(byte *dest, byte value, int32 count)
+void memset(byte *dest, byte value, uint32 length)
 {
-	for(; count != 0; count--)
+	byte *ptr = (byte *)dest;
+
+	for(; length != 0; length--)
 	{
-		*dest++ = value;
+		*ptr++ = value;
 	}
 }
 

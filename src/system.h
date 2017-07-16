@@ -2,8 +2,7 @@
 #include "types.h"
 
 // Basic IO
-void memcpy(byte *dest, byte *src, int32 count);
-void memset(byte *dest, byte value, int32 count);
+void memcpy(byte *dest, const byte *src, uint32 length);
+void memset(byte *dest, byte value, uint32 length);
 byte inb(uint16 port);
 void outb(uint16 port, byte data);
-
