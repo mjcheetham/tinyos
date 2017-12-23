@@ -4,11 +4,11 @@
 static uint16 *fb = (uint16 *) 0x000B8000;
 static uint8 cursor_x = 0;
 static uint8 cursor_y = 0;
-static FBCOLOR color_fg = FBCOLOR_LGREY;
-static FBCOLOR color_bg = FBCOLOR_BLACK;
+static MONCOLOR color_fg = MONCOLOR_LGREY;
+static MONCOLOR color_bg = MONCOLOR_BLACK;
 
 // Blank character
-static const uint16 BLANK = 0x20 /*space*/ | (((FBCOLOR_BLACK << 4) | (FBCOLOR_WHITE & 0x0F)) << 8);
+static const uint16 BLANK = 0x20 /*space*/ | (((MONCOLOR_BLACK << 4) | (MONCOLOR_WHITE & 0x0F)) << 8);
 
 // Update the hardware framebuffer cursor
 static void update_cursor()
@@ -159,7 +159,7 @@ void monitor_clear()
 	update_cursor();
 }
 
-void monitor_color_set(FBCOLOR fg, FBCOLOR bg)
+void monitor_color_set(MONCOLOR fg, MONCOLOR bg)
 {
 	color_fg = fg;
 	color_bg = bg;
@@ -167,5 +167,5 @@ void monitor_color_set(FBCOLOR fg, FBCOLOR bg)
 
 void monitor_color_reset()
 {
-	monitor_color_set(FBCOLOR_LGREY, FBCOLOR_BLACK);
+	monitor_color_set(MONCOLOR_LGREY, MONCOLOR_BLACK);
 }

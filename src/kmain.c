@@ -5,7 +5,7 @@
 int32 kmain()
 {
 	monitor_clear();
-	monitor_color_set(FBCOLOR_WHITE, FBCOLOR_BLUE);
+	monitor_color_set(MONCOLOR_WHITE, MONCOLOR_BLUE);
 	monitor_writeline("tinyOS");
 	monitor_color_reset();
 	monitor_writeline("");

@@ -8,23 +8,23 @@
 
 typedef enum
 {
-	FBCOLOR_BLACK    = 0,
-	FBCOLOR_BLUE     = 1,
-	FBCOLOR_GREEN    = 2,
-	FBCOLOR_CYAN     = 3,
-	FBCOLOR_RED      = 4,
-	FBCOLOR_MAGENTA  = 5,
-	FBCOLOR_BROWN    = 6,
-	FBCOLOR_LGREY    = 7,
-	FBCOLOR_DGREY    = 8,
-	FBCOLOR_LBLUE    = 9,
-	FBCOLOR_LGREEN   = 10,
-	FBCOLOR_LCYAN    = 11,
-	FBCOLOR_LRED     = 12,
-	FBCOLOR_LMAGENTA = 13,
-	FBCOLOR_LBROWN   = 14,
-	FBCOLOR_WHITE    = 15
-} FBCOLOR;
+	MONCOLOR_BLACK    = 0,
+	MONCOLOR_BLUE     = 1,
+	MONCOLOR_GREEN    = 2,
+	MONCOLOR_CYAN     = 3,
+	MONCOLOR_RED      = 4,
+	MONCOLOR_MAGENTA  = 5,
+	MONCOLOR_BROWN    = 6,
+	MONCOLOR_LGREY    = 7,
+	MONCOLOR_DGREY    = 8,
+	MONCOLOR_LBLUE    = 9,
+	MONCOLOR_LGREEN   = 10,
+	MONCOLOR_LCYAN    = 11,
+	MONCOLOR_LRED     = 12,
+	MONCOLOR_LMAGENTA = 13,
+	MONCOLOR_LBROWN   = 14,
+	MONCOLOR_WHITE    = 15
+} MONCOLOR;
 
 // Write a single character to the monitor
 void monitor_put(char c);
@@ -42,7 +42,7 @@ void monitor_write_hex(uint64 i);
 void monitor_clear();
 
 // Set the foreground and background colours
-void monitor_color_set(FBCOLOR fg, FBCOLOR bg);
+void monitor_MONCOLOR_set(MONCOLOR fg, MONCOLOR bg);
 
 // Reset the forground and background colour
-void monitor_color_reset();
+void monitor_MONCOLOR_reset();

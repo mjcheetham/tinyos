@@ -44,7 +44,7 @@ static void gdt_init()
 
     gdt_flush((uint32)&gdt_ptr);
 
-    monitor_color_set(FBCOLOR_GREEN, FBCOLOR_BLACK);
+    monitor_color_set(MONCOLOR_GREEN, MONCOLOR_BLACK);
     monitor_writeline("OK");
     monitor_color_reset();
 }
@@ -93,7 +93,7 @@ static void idt_init()
 
     idt_flush((uint32)&idt_ptr);
 
-    monitor_color_set(FBCOLOR_GREEN, FBCOLOR_BLACK);
+    monitor_color_set(MONCOLOR_GREEN, MONCOLOR_BLACK);
     monitor_writeline("OK");
     monitor_color_reset();
 }
