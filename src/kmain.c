@@ -1,6 +1,7 @@
 #include "system.h"
 #include "monitor.h"
 #include "descriptor_tables.h"
+#include "timer.h"
 
 int32 kmain(void)
 {
@@ -17,6 +18,8 @@ int32 kmain(void)
 
 	asm volatile ("int $0x3");
 	asm volatile ("int $0x4");
+
+	timer_init(50);
 
 	for(;;); // loop forever
 }
