@@ -2,7 +2,7 @@
 #include "monitor.h"
 #include "descriptor_tables.h"
 
-int32 kmain()
+int32 kmain(void)
 {
 	monitor_clear();
 	monitor_color_set(MONCOLOR_WHITE, MONCOLOR_BLUE);

@@ -10,8 +10,8 @@
 extern void gdt_flush(uint32);
 extern void idt_flush(uint32);
 
-static void gdt_init();
-static void idt_init();
+static void gdt_init(void);
+static void idt_init(void);
 static void gdt_set_gate(int32, uint32, uint32, uint8, uint8);
 static void idt_set_gate(uint8, uint32, uint16, uint8);
 
@@ -20,7 +20,7 @@ gdt_ptr_t   gdt_ptr;
 idt_entry_t idt_entries[256];
 idt_ptr_t   idt_ptr;
 
-void init_descriptor_tables()
+void init_descriptor_tables(void)
 {
     // Initialise the Global Descriptor Table
     gdt_init();
@@ -29,7 +29,7 @@ void init_descriptor_tables()
     idt_init();
 }
 
-static void gdt_init()
+static void gdt_init(void)
 {
     monitor_write("Initialising GDT... ");
 
@@ -49,7 +49,7 @@ static void gdt_init()
     monitor_color_reset();
 }
 
-static void idt_init()
+static void idt_init(void)
 {
     monitor_write("Initialising IDT... ");
 

@@ -11,7 +11,7 @@ static MONCOLOR color_bg = MONCOLOR_BLACK;
 static const uint16 BLANK = 0x20 /*space*/ | (((MONCOLOR_BLACK << 4) | (MONCOLOR_WHITE & 0x0F)) << 8);
 
 // Update the hardware framebuffer cursor
-static void update_cursor()
+static void update_cursor(void)
 {
 	uint16 pos = cursor_y * FB_WIDTH + cursor_x;
 
@@ -25,7 +25,7 @@ static void update_cursor()
 }
 
 // Scroll the screen up by one line
-static void scroll()
+static void scroll(void)
 {
 	const uint16 last_line_pos = (FB_HEIGHT - 1) * FB_WIDTH;
 
@@ -145,7 +145,7 @@ void monitor_write_hex(uint64 i)
 	}
 }
 
-void monitor_clear()
+void monitor_clear(void)
 {
 	// Fill the entire screen with the 'blank' character
 	for (int i = 0; i < FB_HEIGHT * FB_WIDTH; i++)
@@ -165,7 +165,7 @@ void monitor_color_set(MONCOLOR fg, MONCOLOR bg)
 	color_bg = bg;
 }
 
-void monitor_color_reset()
+void monitor_color_reset(void)
 {
 	monitor_color_set(MONCOLOR_LGREY, MONCOLOR_BLACK);
 }

@@ -39,10 +39,10 @@ void monitor_writeline(char *str);
 void monitor_write_hex(uint64 i);
 
 // Clear the monitor
-void monitor_clear();
+void monitor_clear(void);
 
 // Set the foreground and background colours
 void monitor_MONCOLOR_set(MONCOLOR fg, MONCOLOR bg);
 
 // Reset the forground and background colour
-void monitor_MONCOLOR_reset();
+void monitor_MONCOLOR_reset(void);
