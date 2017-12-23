@@ -6,6 +6,14 @@
 #define GDT_COUNT 5
 // Number of IDT entries
 #define IDT_COUNT 256
+// Base address for master PIC
+#define PIC1 0x20
+// Base address for slave PIC
+#define PIC2 0xA0
+#define PIC1_CMD PIC1
+#define PIC1_DATA (PIC1_CMD + 1)
+#define PIC2_CMD PIC2
+#define PIC2_DATA (PIC2_CMD + 1)
 
 extern void gdt_flush(uint32);
 extern void idt_flush(uint32);
@@ -14,6 +22,7 @@ static void gdt_init(void);
 static void idt_init(void);
 static void gdt_set_gate(int32, uint32, uint32, uint8, uint8);
 static void idt_set_gate(uint8, uint32, uint16, uint8);
+static void pic_remap(void);
 
 gdt_entry_t gdt_entries[GDT_COUNT];
 gdt_ptr_t   gdt_ptr;
@@ -91,6 +100,25 @@ static void idt_init(void)
     idt_set_gate(30, (uint32)isr30, 0x08, 0x8E);
     idt_set_gate(31, (uint32)isr31, 0x08, 0x8E);
 
+    pic_remap();
+
+    idt_set_gate(32, (uint32)irq0 , 0x08, 0x8E);
+    idt_set_gate(33, (uint32)irq1 , 0x08, 0x8E);
+    idt_set_gate(34, (uint32)irq2 , 0x08, 0x8E);
+    idt_set_gate(35, (uint32)irq3 , 0x08, 0x8E);
+    idt_set_gate(36, (uint32)irq4 , 0x08, 0x8E);
+    idt_set_gate(37, (uint32)irq5 , 0x08, 0x8E);
+    idt_set_gate(38, (uint32)irq6 , 0x08, 0x8E);
+    idt_set_gate(39, (uint32)irq7 , 0x08, 0x8E);
+    idt_set_gate(40, (uint32)irq8 , 0x08, 0x8E);
+    idt_set_gate(41, (uint32)irq9 , 0x08, 0x8E);
+    idt_set_gate(42, (uint32)irq10, 0x08, 0x8E);
+    idt_set_gate(43, (uint32)irq11, 0x08, 0x8E);
+    idt_set_gate(44, (uint32)irq12, 0x08, 0x8E);
+    idt_set_gate(45, (uint32)irq13, 0x08, 0x8E);
+    idt_set_gate(46, (uint32)irq14, 0x08, 0x8E);
+    idt_set_gate(47, (uint32)irq15, 0x08, 0x8E);
+
     idt_flush((uint32)&idt_ptr);
 
     monitor_color_set(MONCOLOR_GREEN, MONCOLOR_BLACK);
@@ -122,4 +150,18 @@ static void idt_set_gate(uint8 number, uint32 base, uint16 selector, uint8 flags
 
     // TODO: set interrupt gate to ring 3
     idt_entries[number].flags     = flags /* | 0x60 */;
+}
+
+static void pic_remap(void)
+{
+    outb(PIC1_CMD,  0x11);
+    outb(PIC2_CMD,  0x11);
+    outb(PIC1_DATA, 0x20);
+    outb(PIC2_DATA, 0x28);
+    outb(PIC1_DATA, 0x04);
+    outb(PIC2_DATA, 0x02);
+    outb(PIC1_DATA, 0x01);
+    outb(PIC2_DATA, 0x01);
+    outb(PIC1_DATA, 0x0);
+    outb(PIC2_DATA, 0x0);
 }
