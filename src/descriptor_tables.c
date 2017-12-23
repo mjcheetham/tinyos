@@ -17,7 +17,7 @@ static void idt_set_gate(uint8, uint32, uint16, uint8);
 
 gdt_entry_t gdt_entries[GDT_COUNT];
 gdt_ptr_t   gdt_ptr;
-idt_entry_t idt_entries[256];
+idt_entry_t idt_entries[IDT_COUNT];
 idt_ptr_t   idt_ptr;
 
 void init_descriptor_tables(void)
