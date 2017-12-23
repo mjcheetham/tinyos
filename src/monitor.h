@@ -42,7 +42,7 @@ void monitor_write_hex(uint64 i);
 void monitor_clear(void);
 
 // Set the foreground and background colours
-void monitor_MONCOLOR_set(MONCOLOR fg, MONCOLOR bg);
+void monitor_color_set(MONCOLOR fg, MONCOLOR bg);
 
 // Reset the forground and background colour
-void monitor_MONCOLOR_reset(void);
+void monitor_color_reset(void);
