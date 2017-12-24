@@ -18,16 +18,6 @@
 #define IRQ14 46
 #define IRQ15 47
 
-// TODO: consolidate with definitions in descriptor_tables.h
-// Base address for master PIC
-#define PIC1 0x20
-// Base address for slave PIC
-#define PIC2 0xA0
-#define PIC1_CMD PIC1
-#define PIC1_DATA (PIC1_CMD + 1)
-#define PIC2_CMD PIC2
-#define PIC2_DATA (PIC2_CMD + 1)
-
 typedef struct
 {
     uint32 ds; // data segment selector

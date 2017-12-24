@@ -1,19 +1,12 @@
 #include "descriptor_tables.h"
 #include "system.h"
 #include "monitor.h"
+#include "pic.h"
 
 // Number of GDT entries
 #define GDT_COUNT 5
 // Number of IDT entries
 #define IDT_COUNT 256
-// Base address for master PIC
-#define PIC1 0x20
-// Base address for slave PIC
-#define PIC2 0xA0
-#define PIC1_CMD PIC1
-#define PIC1_DATA (PIC1_CMD + 1)
-#define PIC2_CMD PIC2
-#define PIC2_DATA (PIC2_CMD + 1)
 
 extern void gdt_flush(uint32);
 extern void idt_flush(uint32);
@@ -155,8 +148,8 @@ static void idt_set_gate(uint8 number, uint32 base, uint16 selector, uint8 flags
 static void pic_remap(void)
 {
     // Restart both PICs
-    outb(PIC1_CMD,  0x11);
-    outb(PIC2_CMD,  0x11);
+    outb(PIC1_CMD, 0x11);
+    outb(PIC2_CMD, 0x11);
 
     // Start PIC1 at 32
     outb(PIC1_DATA, 0x20);
