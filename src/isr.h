@@ -28,7 +28,7 @@
 #define PIC2_CMD PIC2
 #define PIC2_DATA (PIC2_CMD + 1)
 
-typedef struct registers
+typedef struct
 {
     uint32 ds; // data segment selector
     uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax; // pushed by pusha
