@@ -145,10 +145,39 @@ void monitor_write_hex(uint64 i)
 	}
 }
 
+// TODO: implement 64-bit version (need to link to libgcc)
+void monitor_write_dec(uint32 i)
+{
+	if (i == 0)
+	{
+		monitor_put('0');
+		return;
+	}
+
+	int32 acc = i;
+	int32 j;
+	char c[64];
+	for (j = 0; acc > 0; j++)
+	{
+		c[j] = '0' + acc % 10;
+		acc /= 10;
+	}
+	c[j] = 0;
+
+	int32 k = 0;
+	char c2[64];
+	c2[j--] = 0;
+	while (j >= 0)
+	{
+		c2[j--] = c[k++];
+	}
+	monitor_write(c2);
+}
+
 void monitor_clear(void)
 {
 	// Fill the entire screen with the 'blank' character
-	for (int i = 0; i < FB_HEIGHT * FB_WIDTH; i++)
+	for (uint64 i = 0; i < FB_HEIGHT * FB_WIDTH; i++)
 	{
 		fb[i] = BLANK;
 	}

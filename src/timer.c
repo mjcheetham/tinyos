@@ -13,12 +13,14 @@ static void timer_callback(registers_t registers)
 
     tick++;
     monitor_write("Tick: ");
-    monitor_write_hex(tick);
+    monitor_write_dec(tick);
     monitor_writeline("");
 }
 
 void timer_init(uint32 frequency)
 {
+    monitor_write("Initialising platform timer... ");
+
     // Register timer callback
     register_interrupt_handler(IRQ0, &timer_callback);
 
@@ -37,4 +39,8 @@ void timer_init(uint32 frequency)
     // Send the frequency divisor
     outb(0x40, lo);
     outb(0x40, hi);
+
+    monitor_color_set(MONCOLOR_GREEN, MONCOLOR_BLACK);
+    monitor_writeline("OK");
+    monitor_color_reset();
 }

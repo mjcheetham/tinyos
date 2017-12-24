@@ -8,11 +8,17 @@ void isr_handler(registers_t registers)
 {
     monitor_write("recieved interrupt: ");
     monitor_write_hex(registers.int_no);
-    monitor_write("\r\n");
+    monitor_writeline("");
 }
 
 void irq_handler(registers_t registers)
 {
+    monitor_write("recieved interrupt: ");
+    monitor_write_hex(registers.int_no);
+    monitor_write(" (IRQ");
+    monitor_write_dec(registers.int_no - IRQ0);
+    monitor_writeline(")");
+
     // Send an EOI (end of interrupt) signal to the PICs
     if (registers.int_no >= 40)
     {

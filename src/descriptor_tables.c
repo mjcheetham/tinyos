@@ -154,14 +154,24 @@ static void idt_set_gate(uint8 number, uint32 base, uint16 selector, uint8 flags
 
 static void pic_remap(void)
 {
+    // Restart both PICs
     outb(PIC1_CMD,  0x11);
     outb(PIC2_CMD,  0x11);
+
+    // Start PIC1 at 32
     outb(PIC1_DATA, 0x20);
+
+    // Start PIC2 at 40
     outb(PIC2_DATA, 0x28);
+
+    // Set up cascading
     outb(PIC1_DATA, 0x04);
     outb(PIC2_DATA, 0x02);
+
+    // Finish
     outb(PIC1_DATA, 0x01);
     outb(PIC2_DATA, 0x01);
+
     outb(PIC1_DATA, 0x0);
     outb(PIC2_DATA, 0x0);
 }

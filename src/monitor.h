@@ -38,6 +38,9 @@ void monitor_writeline(char *str);
 // Write an integer as a hexadecimal number to the monitor
 void monitor_write_hex(uint64 i);
 
+// Write an integer as a decimal number to the monitor
+void monitor_write_dec(uint32 i);
+
 // Clear the monitor
 void monitor_clear(void);
 

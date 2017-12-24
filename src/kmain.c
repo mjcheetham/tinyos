@@ -12,14 +12,14 @@ int32 kmain(void)
 	monitor_writeline("");
 
 	init_descriptor_tables();
+	timer_init(50);
 
-	monitor_writeline("");
 	monitor_writeline("Ready.");
+	monitor_writeline("");
 
 	asm volatile ("int $0x3");
 	asm volatile ("int $0x4");
-
-	timer_init(50);
+	asm volatile ("int $0x20");
 
 	for(;;); // loop forever
 }
