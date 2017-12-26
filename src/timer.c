@@ -3,8 +3,6 @@
 #include "isr.h"
 #include "monitor.h"
 
-#define UNUSED(x) (void)(x)
-
 uint32 tick = 0;
 
 static void timer_callback(registers_t registers)
@@ -12,9 +10,9 @@ static void timer_callback(registers_t registers)
     UNUSED(registers);
 
     tick++;
-    monitor_write("Tick: ");
-    monitor_write_dec(tick);
-    monitor_writeline("");
+    // monitor_write("Tick: ");
+    // monitor_write_dec(tick);
+    // monitor_writeline("");
 }
 
 void timer_init(uint32 frequency)

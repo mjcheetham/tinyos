@@ -3,6 +3,7 @@
 #include "descriptor_tables.h"
 #include "timer.h"
 #include "isr.h"
+#include "io.h"
 
 int32 kmain(void)
 {
@@ -14,6 +15,7 @@ int32 kmain(void)
 
 	init_descriptor_tables();
 	timer_init(50);
+	kb_init();
 
 	monitor_writeline("Ready.");
 	monitor_writeline("");

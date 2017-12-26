@@ -9,20 +9,11 @@ static void invoke_interrupt_handler(registers_t registers);
 
 void isr_handler(registers_t registers)
 {
-    monitor_write("recieved interrupt: ");
-    monitor_writeline_dec(registers.int_no);
-
     invoke_interrupt_handler(registers);
 }
 
 void irq_handler(registers_t registers)
 {
-    monitor_write("recieved interrupt: ");
-    monitor_write_dec(registers.int_no);
-    monitor_write(" (IRQ");
-    monitor_write_dec(registers.int_no - IRQ0);
-    monitor_writeline(")");
-
     // Send an EOI (end of interrupt) signal to the PICs
     if (registers.int_no >= IRQ8)
     {
