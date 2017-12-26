@@ -174,6 +174,19 @@ void monitor_write_dec(uint32 i)
 	monitor_write(c2);
 }
 
+void monitor_writeline_hex(uint64 i)
+{
+	monitor_write_hex(i);
+	monitor_write("\r\n");
+}
+
+// TODO: implement 64-bit version (need to link to libgcc)
+void monitor_writeline_dec(uint32 i)
+{
+	monitor_write_dec(i);
+	monitor_write("\r\n");
+}
+
 void monitor_clear(void)
 {
 	// Fill the entire screen with the 'blank' character

@@ -2,6 +2,7 @@
 #include "monitor.h"
 #include "descriptor_tables.h"
 #include "timer.h"
+#include "isr.h"
 
 int32 kmain(void)
 {
@@ -17,9 +18,13 @@ int32 kmain(void)
 	monitor_writeline("Ready.");
 	monitor_writeline("");
 
-	asm volatile ("int $0x3");
-	asm volatile ("int $0x4");
-	asm volatile ("int $0x20");
+DEBUG_BREAK();
+
+	interrupt_enable();
+
+	// asm volatile ("int $0x3");
+	// asm volatile ("int $0x4");
+	// asm volatile ("int $0x20");
 
 	for(;;); // loop forever
 }

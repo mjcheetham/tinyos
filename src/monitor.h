@@ -41,6 +41,12 @@ void monitor_write_hex(uint64 i);
 // Write an integer as a decimal number to the monitor
 void monitor_write_dec(uint32 i);
 
+// Write an integer as a hexadecimal number to the monitor followed by a new line
+void monitor_writeline_hex(uint64 i);
+
+// Write an integer as a decimal number to the monitor followed by a new line
+void monitor_writeline_dec(uint32 i);
+
 // Clear the monitor
 void monitor_clear(void);
 

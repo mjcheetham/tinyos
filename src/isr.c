@@ -10,8 +10,7 @@ static void invoke_interrupt_handler(registers_t registers);
 void isr_handler(registers_t registers)
 {
     monitor_write("recieved interrupt: ");
-    monitor_write_dec(registers.int_no);
-    monitor_writeline("");
+    monitor_writeline_dec(registers.int_no);
 
     invoke_interrupt_handler(registers);
 }
@@ -48,4 +47,19 @@ static void invoke_interrupt_handler(registers_t registers)
         isr_t handler = interrupt_handlers[registers.int_no];
         handler(registers);
     }
+    else
+    {
+        monitor_write("unhandled interrupt: ");
+        monitor_writeline_dec(registers.int_no);
+    }
+}
+
+void interrupt_enable()
+{
+    asm volatile ("sti");
+}
+
+void interrupt_disable()
+{
+    asm volatile ("cli");
 }
