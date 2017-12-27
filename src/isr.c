@@ -46,7 +46,7 @@ void irq_handler(registers_t registers)
     invoke_handler(registers);
 }
 
-void interrupt_register(uint8 n, isr_t handler)
+void interrupt_register(uint8_t n, isr_t handler)
 {
     interrupt_handlers[n] = handler;
 }

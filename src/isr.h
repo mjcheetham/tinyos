@@ -20,14 +20,14 @@
 
 typedef struct
 {
-    uint32 ds; // data segment selector
-    uint32 edi, esi, ebp, esp, ebx, edx, ecx, eax; // pushed by pusha
-    uint32 int_no, err_code; // interrupt number and error code (if applicable)
-    uint32 eip, cs, eflags, useresp, ss; // pushed by the processor automatically (on iret)
+    uint32_t ds; // data segment selector
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // pushed by pusha
+    uint32_t int_no, err_code; // interrupt number and error code (if applicable)
+    uint32_t eip, cs, eflags, useresp, ss; // pushed by the processor automatically (on iret)
 } registers_t;
 
 typedef void (*isr_t)(registers_t);
 
-void interrupt_register(uint8 n, isr_t handler);
+void interrupt_register(uint8_t n, isr_t handler);
 void interrupt_enable();
 void interrupt_disable();

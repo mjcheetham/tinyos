@@ -1,4 +1,4 @@
 #pragma once
 #include "types.h"
 
-void timer_init(uint32 frequency);
+void timer_init(uint32_t frequency);

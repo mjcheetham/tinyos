@@ -1,10 +1,10 @@
 #include "system.h"
 #include "monitor.h"
 
-void memcpy(byte *dest, const byte *src, uint32 length)
+void memcpy(byte_t *dest, const byte_t *src, uint32_t length)
 {
-	const byte *srcPtr = (const byte *)src;
-	byte *destPtr = (byte *)dest;
+	const byte_t *srcPtr = (const byte_t *)src;
+	byte_t *destPtr = (byte_t *)dest;
 
 	for(; length != 0; length--)
 	{
@@ -12,9 +12,9 @@ void memcpy(byte *dest, const byte *src, uint32 length)
 	}
 }
 
-void memset(byte *dest, byte value, uint32 length)
+void memset(byte_t *dest, byte_t value, uint32_t length)
 {
-	byte *ptr = (byte *)dest;
+	byte_t *ptr = (byte_t *)dest;
 
 	for(; length != 0; length--)
 	{
@@ -22,14 +22,14 @@ void memset(byte *dest, byte value, uint32 length)
 	}
 }
 
-byte inb(uint16 port)
+byte_t inb(uint16_t port)
 {
-	byte ret;
+	byte_t ret;
 	asm volatile("inb %1, %0" : "=a" (ret) : "dN" (port));
 	return ret;
 }
 
-void outb(uint16 port, byte value)
+void outb(uint16_t port, byte_t value)
 {
 	asm volatile("outb %1, %0" : : "dN" (port), "a" (value));
 }

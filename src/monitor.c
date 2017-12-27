@@ -1,19 +1,19 @@
 #include "monitor.h"
 #include "system.h"
 
-static uint16 *fb = (uint16 *) 0x000B8000;
-static uint8 cursor_x = 0;
-static uint8 cursor_y = 0;
+static uint16_t *fb = (uint16_t *) 0x000B8000;
+static uint8_t cursor_x = 0;
+static uint8_t cursor_y = 0;
 static MONCOLOR color_fg = MONCOLOR_LGREY;
 static MONCOLOR color_bg = MONCOLOR_BLACK;
 
 // Blank character
-static const uint16 BLANK = 0x20 /*space*/ | (((MONCOLOR_BLACK << 4) | (MONCOLOR_WHITE & 0x0F)) << 8);
+static const uint16_t BLANK = 0x20 /*space*/ | (((MONCOLOR_BLACK << 4) | (MONCOLOR_WHITE & 0x0F)) << 8);
 
 // Update the hardware framebuffer cursor
 static void update_cursor(void)
 {
-	uint16 pos = cursor_y * FB_WIDTH + cursor_x;
+	uint16_t pos = cursor_y * FB_WIDTH + cursor_x;
 
 	// Write the high bits
 	outb(0x3D4, 14);
@@ -27,16 +27,16 @@ static void update_cursor(void)
 // Scroll the screen up by one line
 static void scroll(void)
 {
-	const uint16 last_line_pos = (FB_HEIGHT - 1) * FB_WIDTH;
+	const uint16_t last_line_pos = (FB_HEIGHT - 1) * FB_WIDTH;
 
 	// Copy line_i to line_(i-1)
-	for (uint16 i = 0; i < last_line_pos; i++)
+	for (uint16_t i = 0; i < last_line_pos; i++)
 	{
 		fb[i] = fb[i + FB_WIDTH];
 	}
 
 	// Clear last line
-	for (uint16 i = last_line_pos; i < FB_HEIGHT * FB_WIDTH; i++)
+	for (uint16_t i = last_line_pos; i < FB_HEIGHT * FB_WIDTH; i++)
 	{
 		fb[i] = BLANK;
 	}
@@ -71,8 +71,8 @@ void monitor_put(char c)
 	else if (c >= ' ')
 	{
 		// Calculate the position and colour bits
-		uint8 color = (color_bg << 4) | (color_fg & 0x0F);
-		uint16 pos = cursor_y * FB_WIDTH + cursor_x;
+		uint8_t color = (color_bg << 4) | (color_fg & 0x0F);
+		uint16_t pos = cursor_y * FB_WIDTH + cursor_x;
 
 		// Write character to framebuffer
 		fb[pos] = c | (color << 8);
@@ -102,7 +102,7 @@ void monitor_write(char *str)
 {
 	// TODO: handle str longer than 32-bits
 	//       and/or a non-null terminated string
-	uint32 i = 0;
+	uint32_t i = 0;
 	while(str[i])
 	{
 		monitor_put(str[i++]);
@@ -115,19 +115,19 @@ void monitor_writeline(char *str)
 	monitor_write("\r\n");
 }
 
-static void monitor_write_hex(uint64 i)
+static void monitor_write_hex(uint64_t i)
 {
 	// Display 8 chars if only 32-bit value or less
-	uint8 len = 7;
+	uint8_t len = 7;
 	if (i > 0xFFFFFFFF)
 	{
 		len = 15;
 	}
 
 	monitor_write("0x");
-	for (int8 j = len; j >= 0; j--)
+	for (int8_t j = len; j >= 0; j--)
 	{
-		uint32 digit = (i >> j*4) & 0xF;
+		uint32_t digit = (i >> j*4) & 0xF;
 		if (digit < 0xA)
 		{
 			monitor_put(digit + '0');
@@ -146,7 +146,7 @@ static void monitor_write_hex(uint64 i)
 }
 
 // TODO: implement 64-bit version (need to link to libgcc)
-static void monitor_write_dec(uint32 i)
+static void monitor_write_dec(uint32_t i)
 {
 	if (i == 0)
 	{
@@ -154,8 +154,8 @@ static void monitor_write_dec(uint32 i)
 		return;
 	}
 
-	int32 acc = i;
-	int32 j;
+	int32_t acc = i;
+	int32_t j;
 	char c[64];
 	for (j = 0; acc > 0; j++)
 	{
@@ -164,7 +164,7 @@ static void monitor_write_dec(uint32 i)
 	}
 	c[j] = 0;
 
-	int32 k = 0;
+	int32_t k = 0;
 	char c2[64];
 	c2[j--] = 0;
 	while (j >= 0)
@@ -174,7 +174,7 @@ static void monitor_write_dec(uint32 i)
 	monitor_write(c2);
 }
 
-void monitor_writei(uint64 i, char fmt)
+void monitor_writei(uint64_t i, char fmt)
 {
 	switch (fmt)
 	{
@@ -189,7 +189,7 @@ void monitor_writei(uint64 i, char fmt)
 	}
 }
 
-void monitor_writelinei(uint64 i, char fmt)
+void monitor_writelinei(uint64_t i, char fmt)
 {
 	monitor_writei(i, fmt);
 	monitor_write("\r\n");
@@ -198,7 +198,7 @@ void monitor_writelinei(uint64 i, char fmt)
 void monitor_clear(void)
 {
 	// Fill the entire screen with the 'blank' character
-	for (uint64 i = 0; i < FB_HEIGHT * FB_WIDTH; i++)
+	for (uint64_t i = 0; i < FB_HEIGHT * FB_WIDTH; i++)
 	{
 		fb[i] = BLANK;
 	}

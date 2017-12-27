@@ -8,8 +8,8 @@
 #define KB_DATA_PORT 0x60
 
 static void  kb_isr(registers_t);
-static uint8 kb_read_scancode(void);
-static char  kb_translate_scancode(uint8);
+static uint8_t kb_read_scancode(void);
+static char  kb_translate_scancode(uint8_t);
 
 void kb_init(void)
 {
@@ -26,17 +26,17 @@ static void kb_isr(registers_t registers)
 {
     UNUSED(registers);
 
-    uint8 sc = kb_read_scancode();
+    uint8_t sc = kb_read_scancode();
     char c = kb_translate_scancode(sc);
     monitor_put(c);
 }
 
-static uint8 kb_read_scancode(void)
+static uint8_t kb_read_scancode(void)
 {
     return inb(KB_DATA_PORT);
 }
 
-static char kb_translate_scancode(uint8 sc)
+static char kb_translate_scancode(uint8_t sc)
 {
     // TODO: translate to Unicode (UTF-7) character
     return scancodes_down[sc];

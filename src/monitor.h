@@ -36,10 +36,10 @@ void monitor_write(char *str);
 void monitor_writeline(char *str);
 
 // Write an integer with the given format to the monitor
-void monitor_writei(uint64 i, char fmt);
+void monitor_writei(uint64_t i, char fmt);
 
 // Write an integer with the given format to the monitor followed by a new line
-void monitor_writelinei(uint64 i, char fmt);
+void monitor_writelinei(uint64_t i, char fmt);
 
 // Clear the monitor
 void monitor_clear(void);
