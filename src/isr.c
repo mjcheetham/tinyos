@@ -5,33 +5,7 @@
 
 isr_t interrupt_handlers[256];
 
-static void invoke_interrupt_handler(registers_t registers);
-
-void isr_handler(registers_t registers)
-{
-    invoke_interrupt_handler(registers);
-}
-
-void irq_handler(registers_t registers)
-{
-    // Send an EOI (end of interrupt) signal to the PICs
-    if (registers.int_no >= IRQ8)
-    {
-        // Send reset signal to the slave
-        outb(PIC2_CMD, PIC_EOI);
-    }
-    // Send reset signal to the master
-    outb(PIC1_CMD, PIC_EOI);
-
-    invoke_interrupt_handler(registers);
-}
-
-void register_interrupt_handler(uint8 n, isr_t handler)
-{
-    interrupt_handlers[n] = handler;
-}
-
-static void invoke_interrupt_handler(registers_t registers)
+static void invoke_handler(registers_t registers)
 {
     if (interrupt_handlers[registers.int_no] != 0)
     {
@@ -51,6 +25,30 @@ static void invoke_interrupt_handler(registers_t registers)
         monitor_writeline("");
         panic("unhandled interrupt");
     }
+}
+
+void isr_handler(registers_t registers)
+{
+    invoke_handler(registers);
+}
+
+void irq_handler(registers_t registers)
+{
+    // Send an EOI (end of interrupt) signal to the PICs
+    if (registers.int_no >= IRQ8)
+    {
+        // Send reset signal to the slave
+        outb(PIC2_CMD, PIC_EOI);
+    }
+    // Send reset signal to the master
+    outb(PIC1_CMD, PIC_EOI);
+
+    invoke_handler(registers);
+}
+
+void interrupt_register(uint8 n, isr_t handler)
+{
+    interrupt_handlers[n] = handler;
 }
 
 void interrupt_enable()

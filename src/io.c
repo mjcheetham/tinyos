@@ -15,7 +15,7 @@ void kb_init(void)
 {
     monitor_write("Initialising keyboard... ");
 
-    register_interrupt_handler(IRQ1, &kb_isr);
+    interrupt_register(IRQ1, &kb_isr);
 
     monitor_color_set(MONCOLOR_GREEN, MONCOLOR_BLACK);
     monitor_writeline("OK");

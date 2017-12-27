@@ -11,7 +11,8 @@ void kmain(void)
 {
 	printheader();
 
-	init_descriptor_tables();
+	gdt_init();
+	idt_init();
 	timer_init(1000);
 	kb_init();
 

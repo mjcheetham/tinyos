@@ -36,7 +36,8 @@ typedef struct
     uint32 base;            // the address of the first IDT entry
 } __attribute__((packed)) idt_ptr_t;
 
-void init_descriptor_tables(void);
+void gdt_init(void);
+void idt_init(void);
 
 // ISR handlers
 extern void isr0 (void);
