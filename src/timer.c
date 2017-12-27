@@ -11,8 +11,7 @@ static void timer_callback(registers_t registers)
 
     tick++;
     // monitor_write("Tick: ");
-    // monitor_write_dec(tick);
-    // monitor_writeline("");
+    // monitor_writeline_dec(tick);
 }
 
 void timer_init(uint32 frequency)

@@ -11,3 +11,6 @@ void outb(uint16 port, byte data);
 
 // Debugging
 #define DEBUG_BREAK() asm volatile ("xchg %bx, %bx")
+
+// Panic!
+void panic(char *msg);

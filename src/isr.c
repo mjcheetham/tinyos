@@ -41,7 +41,14 @@ static void invoke_interrupt_handler(registers_t registers)
     else
     {
         monitor_write("unhandled interrupt: ");
-        monitor_writeline_dec(registers.int_no);
+        monitor_writei(registers.int_no, 'd');
+        if (IRQ0 <= registers.int_no && registers.int_no <= IRQ15)
+        {
+            monitor_write(" (IRQ");
+            monitor_writei(registers.int_no - IRQ0, 'd');
+            monitor_write(")");
+        }
+        monitor_writeline("");
     }
 }
 

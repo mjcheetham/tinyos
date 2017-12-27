@@ -1,4 +1,5 @@
 #include "system.h"
+#include "monitor.h"
 
 void memcpy(byte *dest, const byte *src, uint32 length)
 {
@@ -33,3 +34,8 @@ void outb(uint16 port, byte value)
 	asm volatile("outb %1, %0" : : "dN" (port), "a" (value));
 }
 
+void panic(char *msg)
+{
+	monitor_writeline(msg);
+	for (;;);
+}

@@ -115,7 +115,7 @@ void monitor_writeline(char *str)
 	monitor_write("\r\n");
 }
 
-void monitor_write_hex(uint64 i)
+static void monitor_write_hex(uint64 i)
 {
 	// Display 8 chars if only 32-bit value or less
 	uint8 len = 7;
@@ -146,7 +146,7 @@ void monitor_write_hex(uint64 i)
 }
 
 // TODO: implement 64-bit version (need to link to libgcc)
-void monitor_write_dec(uint32 i)
+static void monitor_write_dec(uint32 i)
 {
 	if (i == 0)
 	{
@@ -174,16 +174,24 @@ void monitor_write_dec(uint32 i)
 	monitor_write(c2);
 }
 
-void monitor_writeline_hex(uint64 i)
+void monitor_writei(uint64 i, char fmt)
 {
-	monitor_write_hex(i);
-	monitor_write("\r\n");
+	switch (fmt)
+	{
+		case 'd':
+			monitor_write_dec(i);
+			break;
+		case 'x':
+			monitor_write_hex(i);
+			break;
+		default:
+			panic("Invalid format option");
+	}
 }
 
-// TODO: implement 64-bit version (need to link to libgcc)
-void monitor_writeline_dec(uint32 i)
+void monitor_writelinei(uint64 i, char fmt)
 {
-	monitor_write_dec(i);
+	monitor_writei(i, fmt);
 	monitor_write("\r\n");
 }
 
