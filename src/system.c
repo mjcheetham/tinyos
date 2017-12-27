@@ -1,7 +1,7 @@
 #include "system.h"
 #include "monitor.h"
 
-void memcpy(byte_t *dest, const byte_t *src, uint32_t length)
+void memcpy(void *dest, const void *src, uint32_t length)
 {
 	const byte_t *srcPtr = (const byte_t *)src;
 	byte_t *destPtr = (byte_t *)dest;
@@ -12,7 +12,7 @@ void memcpy(byte_t *dest, const byte_t *src, uint32_t length)
 	}
 }
 
-void memset(byte_t *dest, byte_t value, uint32_t length)
+void memset(void *dest, byte_t value, uint32_t length)
 {
 	byte_t *ptr = (byte_t *)dest;
 

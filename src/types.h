@@ -1,5 +1,7 @@
 #pragma once
 
+#define NULL 0
+
 // Define some uniform types
 typedef enum
 {

@@ -4,8 +4,8 @@
 #define UNUSED(x) (void)(x)
 
 // Basic IO
-void memcpy(byte_t *dest, const byte_t *src, uint32_t length);
-void memset(byte_t *dest, byte_t value, uint32_t length);
+void memcpy(void *dest, const void *src, uint32_t length);
+void memset(void *dest, byte_t value, uint32_t length);
 byte_t inb(uint16_t port);
 void outb(uint16_t port, byte_t data);
 
