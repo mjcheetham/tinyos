@@ -36,6 +36,10 @@ void outb(uint16 port, byte value)
 
 void panic(char *msg)
 {
+	monitor_color_set(MONCOLOR_WHITE, MONCOLOR_RED);
+	monitor_write("PANIC");
+	monitor_color_reset();
+	monitor_write(" ");
 	monitor_writeline(msg);
 	for (;;);
 }

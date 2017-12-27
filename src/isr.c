@@ -49,6 +49,7 @@ static void invoke_interrupt_handler(registers_t registers)
             monitor_write(")");
         }
         monitor_writeline("");
+        panic("unhandled interrupt");
     }
 }
 
