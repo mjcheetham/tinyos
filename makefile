@@ -47,7 +47,6 @@ $(OUT)/os.iso: $(OUT_BIN)/kernel
 	$(ETC)/build-iso.sh
 
 $(OUT_BIN)/kernel: $(OUT_OBJ)/boot.o $(OUT_OBJ)/kmain.o $(OUT_OBJ)/system.o $(OUT_OBJ)/monitor.o $(OUT_OBJ)/descriptor_tables.o $(OUT_OBJ)/gdt.o $(OUT_OBJ)/idt.o $(OUT_OBJ)/interrupt.o $(OUT_OBJ)/isr.o $(OUT_OBJ)/timer.o $(OUT_OBJ)/io.o
-	mkdir -p $(OUT_BIN)
 	ld $(LDFLAGS) $^ -o $@
 
 $(OUT_OBJ)/%.o: $(SRC)/%.s $(OUT)
@@ -56,5 +55,5 @@ $(OUT_OBJ)/%.o: $(SRC)/%.s $(OUT)
 $(OUT_OBJ)/%.o: $(SRC)/%.c $(OUT)
 	$(CC) $(CFLAGS) $< -o $@
 
-$(OUT)/:
+$(OUT):
 	mkdir -p $(OUT) $(OUT_OBJ) $(OUT_BIN)
