@@ -11,7 +11,17 @@ ETC      = etc
 #########
 # Files #
 #########
-
+OBJFILES = $(OUT_OBJ)/boot.o \
+           $(OUT_OBJ)/descriptor_tables.o \
+           $(OUT_OBJ)/gdt.o \
+           $(OUT_OBJ)/idt.o \
+           $(OUT_OBJ)/interrupt.o \
+           $(OUT_OBJ)/io.o \
+           $(OUT_OBJ)/isr.o \
+           $(OUT_OBJ)/kmain.o \
+           $(OUT_OBJ)/monitor.o \
+           $(OUT_OBJ)/system.o \
+           $(OUT_OBJ)/timer.o
 
 #########################
 # Assembler & compilers #
@@ -46,7 +56,7 @@ $(OUT)/os.iso: $(OUT_BIN)/kernel
 	$(ETC)/build-layout.sh
 	$(ETC)/build-iso.sh
 
-$(OUT_BIN)/kernel: $(OUT_OBJ)/boot.o $(OUT_OBJ)/kmain.o $(OUT_OBJ)/system.o $(OUT_OBJ)/monitor.o $(OUT_OBJ)/descriptor_tables.o $(OUT_OBJ)/gdt.o $(OUT_OBJ)/idt.o $(OUT_OBJ)/interrupt.o $(OUT_OBJ)/isr.o $(OUT_OBJ)/timer.o $(OUT_OBJ)/io.o
+$(OUT_BIN)/kernel: $(OBJFILES)
 	ld $(LDFLAGS) $^ -o $@
 
 $(OUT_OBJ)/%.o: $(SRC)/%.s $(OUT)
