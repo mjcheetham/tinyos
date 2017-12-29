@@ -1,9 +1,9 @@
 #include "io.h"
-#include "types.h"
 #include "isr.h"
-#include "system.h"
 #include "monitor.h"
 #include "scancodes.h"
+#include "system.h"
+#include "types.h"
 
 #define KB_DATA_PORT 0x60
 

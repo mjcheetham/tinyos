@@ -1,9 +1,9 @@
 #include "paging.h"
-#include "types.h"
-#include "system.h"
-#include "kheap.h"
 #include "isr.h"
+#include "kheap.h"
 #include "monitor.h"
+#include "system.h"
+#include "types.h"
 
 // Assume physical memory is 16 MiB
 #define PHYS_MEM_SIZE 0x1000000

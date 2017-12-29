@@ -1,5 +1,4 @@
 #include "kheap.h"
-#include "types.h"
 #include "paging.h"
 
 // end is defined in linker script

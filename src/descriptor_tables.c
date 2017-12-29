@@ -1,7 +1,7 @@
 #include "descriptor_tables.h"
-#include "system.h"
 #include "monitor.h"
 #include "pic.h"
+#include "system.h"
 
 // Number of GDT entries
 #define GDT_COUNT 5

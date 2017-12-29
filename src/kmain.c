@@ -1,10 +1,10 @@
 #include "system.h"
-#include "monitor.h"
 #include "descriptor_tables.h"
-#include "timer.h"
 #include "isr.h"
 #include "io.h"
+#include "monitor.h"
 #include "paging.h"
+#include "timer.h"
 
 static void printheader(void);
 

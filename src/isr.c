@@ -1,7 +1,7 @@
 #include "isr.h"
-#include "system.h"
 #include "monitor.h"
 #include "pic.h"
+#include "system.h"
 
 isr_t interrupt_handlers[256];
 
