@@ -18,8 +18,10 @@ OBJFILES = $(OUT_OBJ)/boot.o \
            $(OUT_OBJ)/interrupt.o \
            $(OUT_OBJ)/io.o \
            $(OUT_OBJ)/isr.o \
+           $(OUT_OBJ)/kheap.o \
            $(OUT_OBJ)/kmain.o \
            $(OUT_OBJ)/monitor.o \
+           $(OUT_OBJ)/paging.o \
            $(OUT_OBJ)/system.o \
            $(OUT_OBJ)/timer.o
 

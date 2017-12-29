@@ -11,9 +11,12 @@ operating system(!)
 
 - [x] Bootable! (using GRUB)
 - [x] Set up basic memory segmentation
-- [ ] Set up paged virtual memory - TODO!
+- [x] Set up paged virtual memory
 - [x] Can recieve and handle basic software and hardware (IRQ) interrupts
 - [x] Can print to the (VGA text-mode) screen
+- [ ] Heaped memory
+- [ ] File system
+- [ ] User-mode processes and executable loading
 
 ## Building
 

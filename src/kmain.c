@@ -4,6 +4,7 @@
 #include "timer.h"
 #include "isr.h"
 #include "io.h"
+#include "paging.h"
 
 static void printheader(void);
 
@@ -15,10 +16,16 @@ void kmain(void)
 	idt_init();
 	timer_init(1000);
 	kb_init();
+	paging_init();
 
 	monitor_writeline("Ready.");
 
 	interrupt_enable();
+
+	// force page fault
+	uint32_t *ptr = (uint32_t*)0xA0000000;
+	uint32_t fault = *ptr;
+	UNUSED_VAR(fault);
 }
 
 static void printheader(void)

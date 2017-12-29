@@ -7,7 +7,7 @@ uint32_t tick = 0;
 
 static void timer_callback(registers_t registers)
 {
-    UNUSED(registers);
+    UNUSED_VAR(registers);
 
     tick++;
     // monitor_write("Tick: ");

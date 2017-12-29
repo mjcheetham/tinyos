@@ -24,7 +24,7 @@ void kb_init(void)
 
 static void kb_isr(registers_t registers)
 {
-    UNUSED(registers);
+    UNUSED_VAR(registers);
 
     uint8_t sc = kb_read_scancode();
     char c = kb_translate_scancode(sc);

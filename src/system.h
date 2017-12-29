@@ -1,7 +1,8 @@
 #pragma once
 #include "types.h"
 
-#define UNUSED(x) (void)(x)
+#define UNUSED_VAR(x) (void)(x)
+#define UNUSED_FUNC __attribute__ ((unused))
 
 // Basic IO
 void memcpy(void *dest, const void *src, uint32_t length);
