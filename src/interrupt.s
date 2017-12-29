@@ -3,87 +3,87 @@
 [EXTERN irq_handler]
 
 isr_common:
-    pusha                ; pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+	pusha                ; pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
-    mov ax, ds           ; lower 16 bits of eax = ds
-    push eax             ; save the data segment descriptor
+	mov ax, ds           ; lower 16 bits of eax = ds
+	push eax             ; save the data segment descriptor
 
-    mov ax, 0x10         ; load the kernel data segment descriptor
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+	mov ax, 0x10         ; load the kernel data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-    call isr_handler
+	call isr_handler
 
-    pop eax              ; reload the original data segment descriptor
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+	pop eax              ; reload the original data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-    popa                 ; pops edi,esi,ebp,esp,ebx,edx,ecx,eax
-    add esp, 8           ; clean up the pushed error code and pushed ISR number
-    sti                  ; enable interrupts
-    iret                 ; return from an interrupt..
-                         ; ..pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+	popa                 ; pops edi,esi,ebp,esp,ebx,edx,ecx,eax
+	add esp, 8           ; clean up the pushed error code and pushed ISR number
+	sti                  ; enable interrupts
+	iret                 ; return from an interrupt..
+	                     ; ..pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
 irq_common:
-    pusha                ; pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+	pusha                ; pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
-    mov ax, ds           ; lower 16 bits of eax = ds
-    push eax             ; save the data segment descriptor
+	mov ax, ds           ; lower 16 bits of eax = ds
+	push eax             ; save the data segment descriptor
 
-    mov ax, 0x10         ; load the kernel data segment descriptor
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+	mov ax, 0x10         ; load the kernel data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-    call irq_handler
+	call irq_handler
 
-    pop eax              ; reload the original data segment descriptor
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+	pop eax              ; reload the original data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-    popa                 ; pops edi,esi,ebp,esp,ebx,edx,ecx,eax
-    add esp, 8           ; clean up the pushed error code and pushed ISR number
-    sti                  ; enable interrupts
-    iret                 ; return from an interrupt..
-                         ; ..pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+	popa                 ; pops edi,esi,ebp,esp,ebx,edx,ecx,eax
+	add esp, 8           ; clean up the pushed error code and pushed ISR number
+	sti                  ; enable interrupts
+	iret                 ; return from an interrupt..
+	                     ; ..pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
 ; Define macro for interrupt handler without an error code
 %macro ISR_NOERROR 1
-    [GLOBAL isr%1]
-    isr%1:
-        cli              ; disable interrupts
-        push byte 0      ; push a dummy error code
-        push byte %1     ; push the interrupt number
-        jmp isr_common   ; jump to the common handler
+	[GLOBAL isr%1]
+	isr%1:
+		cli              ; disable interrupts
+		push byte 0      ; push a dummy error code
+		push byte %1     ; push the interrupt number
+		jmp isr_common   ; jump to the common handler
 %endmacro
 
 ; Define macro for interrupt handler with an error code
 ;  arg 0 : error code
 %macro ISR_ERROR 1
-    [GLOBAL isr%1]
-    isr%1:
-        cli              ; disable interrupts
-        push byte %1     ; push the interrupt number
-        jmp isr_common   ; jump to the common handler
+	[GLOBAL isr%1]
+	isr%1:
+		cli              ; disable interrupts
+		push byte %1     ; push the interrupt number
+		jmp isr_common   ; jump to the common handler
 %endmacro
 
 ; Define macro for IRQ interrupt handler
 ;  arg 0 : IRQ number (0-15)
 ;  arg 1 : ISR number (32-47)
 %macro IRQ 2
-    [GLOBAL irq%1]
-    irq%1:
-        cli              ; disable interrupts
-        push byte 0      ; push zero
-        push byte %2     ; push ISR number
-        jmp irq_common   ; jump to the common handler
+	[GLOBAL irq%1]
+	irq%1:
+		cli              ; disable interrupts
+		push byte 0      ; push zero
+		push byte %2     ; push ISR number
+		jmp irq_common   ; jump to the common handler
 %endmacro
 
 ; Set up ISRs 0 to 31
