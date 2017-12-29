@@ -8,12 +8,6 @@
 // Assume physical memory is 16 MiB
 #define PHYS_MEM_SIZE 0x1000000
 
-// Page size is 4 KiB
-#define PAGE_SIZE 0x1000
-
-// Number of entries in a page table
-#define PAGE_TABLE_LENGTH 1024
-
 // Bitmap of frames (used/free)
 uint32_t *frames;
 uint32_t nframes;

@@ -1,5 +1,6 @@
 #include "kheap.h"
 #include "types.h"
+#include "paging.h"
 
 // end is defined in linker script
 extern uint32_t end;
@@ -14,7 +15,7 @@ static uint32_t kmalloc_int(uint32_t size, bool_t align, uint32_t *phys)
     {
         // Page-align the address!
         placement_address &= 0xFFFFF000;
-        placement_address += 0x1000; // page size (4 KiB)
+        placement_address += PAGE_SIZE;
     }
 
     if (phys)
