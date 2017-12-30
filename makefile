@@ -21,6 +21,7 @@ OBJFILES = $(OUT_OBJ)/boot.o \
            $(OUT_OBJ)/kheap.o \
            $(OUT_OBJ)/kmain.o \
            $(OUT_OBJ)/monitor.o \
+           $(OUT_OBJ)/ordered_array.o \
            $(OUT_OBJ)/paging.o \
            $(OUT_OBJ)/system.o \
            $(OUT_OBJ)/timer.o
