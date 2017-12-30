@@ -10,3 +10,4 @@
 #define PIC2_DATA (PIC2_CMD + 1)
 
 #define PIC_EOI 0x20
+#define PIC_READ_ISR 0x0B
