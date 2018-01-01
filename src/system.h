@@ -14,4 +14,8 @@ void outb(uint16_t port, byte_t data);
 #define DEBUG_BREAK() asm volatile ("xchg %bx, %bx")
 
 // Panic!
-void panic(char *msg);
+#define PANIC(msg) panic(msg, __FILE__, __LINE__);
+#define ASSERT(b) ((b) ? (void)0 : panic_assert(#b, __FILE__, __LINE__))
+
+extern void panic(char *msg, char *file, uint32_t line);
+extern void panic_assert(char *msg, char *file, uint32_t line);

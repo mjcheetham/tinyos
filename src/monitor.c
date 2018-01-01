@@ -185,7 +185,7 @@ void monitor_writei(uint64_t i, char fmt)
 			monitor_write_hex(i);
 			break;
 		default:
-			panic("Invalid format option");
+			PANIC("Invalid format option");
 	}
 }
 

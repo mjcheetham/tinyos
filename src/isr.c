@@ -54,7 +54,7 @@ static void invoke_handler(registers_t registers)
 			monitor_write(")");
 		}
 		monitor_writeline("");
-		panic("unhandled interrupt");
+		PANIC("unhandled interrupt");
 	}
 }
 

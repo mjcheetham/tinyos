@@ -7,6 +7,9 @@
 // Number of entries in a page table
 #define PAGE_TABLE_LENGTH 1024
 
+#define IS_PAGE_ALIGNED(x) ((x) & 0xFFFFF000 == 0)
+#define IS_NOT_PAGE_ALIGNED(x) ((x) & 0xFFFFF000 != 0)
+
 // Represents a page table entry
 typedef struct
 {

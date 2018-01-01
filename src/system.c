@@ -34,12 +34,36 @@ void outb(uint16_t port, byte_t value)
 	asm volatile("outb %1, %0" : : "dN" (port), "a" (value));
 }
 
-void panic(char *msg)
+void panic(char *msg, char *file, uint32_t line)
 {
+	interrupt_disable();
+
 	monitor_color_set(MONCOLOR_WHITE, MONCOLOR_RED);
 	monitor_write("PANIC");
 	monitor_color_reset();
 	monitor_write(" ");
 	monitor_writeline(msg);
+	monitor_write(' (');
+	monitor_write(file);
+	monitor_put(':');
+	monitor_write_dec(line);
+	monitor_writeline(")");
+	for (;;);
+}
+
+void panic_assert(char *msg, char *file, uint32_t line)
+{
+	interrupt_disable();
+
+	monitor_color_set(MONCOLOR_WHITE, MONCOLOR_LBROWN);
+	monitor_write("ASSERTION FAILED");
+	monitor_color_reset();
+	monitor_write(" ");
+	monitor_writeline(msg);
+	monitor_write(' (');
+	monitor_write(file);
+	monitor_put(':');
+	monitor_write_dec(line);
+	monitor_writeline(")");
 	for (;;);
 }

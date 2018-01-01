@@ -78,7 +78,7 @@ static void alloc_frame(page_t *page, bool_t kernel, bool_t writable)
 	uint32_t index = get_first_frame();
 	if (index == (uint32_t)-1)
 	{
-		panic("out of frames");
+		PANIC("out of frames");
 	}
 
 	set_frame_state(index * PAGE_SIZE, true);
@@ -159,7 +159,7 @@ static void handle_fault(registers_t registers)
 	if (reserved) monitor_write("reserved ");
 	monitor_write(") at ");
 	monitor_writelinei(faulting_address, 'x');
-	panic("page fault");
+	PANIC("page fault");
 }
 
 void paging_init(void)

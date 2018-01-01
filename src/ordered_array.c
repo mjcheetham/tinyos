@@ -23,7 +23,7 @@ void ordered_array_destroy(ordered_array_t *array)
 {
 	UNUSED_VAR(array);
 	// TODO: free array->array
-	panic("not implemented: ordered_array_destroy");
+	PANIC("not implemented: ordered_array_destroy");
 }
 
 void ordered_array_insert(type_t item, ordered_array_t *array)
@@ -32,7 +32,7 @@ void ordered_array_insert(type_t item, ordered_array_t *array)
 	if (array->size == array->max_size)
 	{
 		// TODO: return a failure code instead of panic?
-		panic("ordered array at max size");
+		PANIC("ordered array at max size");
 	}
 
 	// Walk along array until we reach the correct insertion point
