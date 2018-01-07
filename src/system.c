@@ -1,5 +1,6 @@
 #include "system.h"
 #include "monitor.h"
+#include "isr.h"
 
 void memcpy(void *dest, const void *src, uint32_t length)
 {
@@ -43,10 +44,10 @@ void panic(char *msg, char *file, uint32_t line)
 	monitor_color_reset();
 	monitor_write(" ");
 	monitor_writeline(msg);
-	monitor_write(' (');
+	monitor_write(" (");
 	monitor_write(file);
 	monitor_put(':');
-	monitor_write_dec(line);
+	monitor_writei(line, 'd');
 	monitor_writeline(")");
 	for (;;);
 }
@@ -60,10 +61,10 @@ void panic_assert(char *msg, char *file, uint32_t line)
 	monitor_color_reset();
 	monitor_write(" ");
 	monitor_writeline(msg);
-	monitor_write(' (');
+	monitor_write(" (");
 	monitor_write(file);
 	monitor_put(':');
-	monitor_write_dec(line);
+	monitor_writei(line, 'd');
 	monitor_writeline(")");
 	for (;;);
 }
