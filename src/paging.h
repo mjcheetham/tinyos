@@ -7,8 +7,11 @@
 // Number of entries in a page table
 #define PAGE_TABLE_LENGTH 1024
 
-#define IS_PAGE_ALIGNED(x) ((x) & 0xFFFFF000 == 0)
-#define IS_NOT_PAGE_ALIGNED(x) ((x) & 0xFFFFF000 != 0)
+#define IS_PAGE_ALIGNED(x)     (((x) & 0x00000FFF) == 0)
+#define IS_NOT_PAGE_ALIGNED(x) (((x) & 0x00000FFF) != 0)
+
+// Increment value to the next page boundary
+#define NEXT_PAGE_BOUNDARY(x)  (((x) & 0xFFFFF000) + PAGE_SIZE)
 
 // Represents a page table entry
 typedef struct

@@ -10,11 +10,10 @@ static uint32_t kmalloc_int(uint32_t size, bool_t align, uint32_t *phys)
 	// TODO: implement a heap for the kernel to use!
 	// For now, just assign memory at placement_address
 	// and increment it by size.
-	if (align && (placement_address & 0xFFFFF000))
+	if (align && IS_NOT_PAGE_ALIGNED(placement_address))
 	{
 		// Page-align the address!
-		placement_address &= 0xFFFFF000;
-		placement_address += PAGE_SIZE;
+		placement_address = NEXT_PAGE_BOUNDARY(placement_address);
 	}
 
 	if (phys)
