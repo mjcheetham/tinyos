@@ -2,6 +2,11 @@
 #include "monitor.h"
 #include "isr.h"
 
+static void halt(void)
+{
+	asm volatile("hlt");
+}
+
 void memcpy(void *dest, const void *src, uint32_t length)
 {
 	const byte_t *srcPtr = (const byte_t *)src;
@@ -49,7 +54,8 @@ void panic(char *msg, char *file, uint32_t line)
 	monitor_put(':');
 	monitor_writei(line, 'd');
 	monitor_writeline(")");
-	for (;;);
+	
+	halt();
 }
 
 void panic_assert(char *msg, char *file, uint32_t line)
@@ -66,5 +72,6 @@ void panic_assert(char *msg, char *file, uint32_t line)
 	monitor_put(':');
 	monitor_writei(line, 'd');
 	monitor_writeline(")");
-	for (;;);
+
+	halt();
 }
