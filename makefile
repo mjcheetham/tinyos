@@ -29,38 +29,66 @@ OBJFILES = $(OUT_OBJ)/boot.o \
 #########################
 # Assembler & compilers #
 #########################
-CC       = gcc
-CFLAGS   = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
-           -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c
-LDFLAGS  = -T $(SRC)/link.ld -melf_i386
-AS       = nasm
-ASFLAGS  = -f elf32
+ifeq ($(OS),Windows_NT)
+    # Windows
+    $(error Windows is not a supported built platform.)
+else
+  UNAME_S := $(shell uname -s)
+  ifeq ($(UNAME_S),Linux)
+    # Linux
+    CC       = gcc
+    CFLAGS   = -m32 \
+               -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
+               -Wall -Wextra -Werror -c
+    LD       = ld
+    LDFLAGS  = -T $(SRC)/link.ld -melf_i386
+    AS       = nasm
+    ASFLAGS  = -f elf32
+    BOCHSCFG = $(ETC)/bochs.linux.cfg
+  endif
+  ifeq ($(UNAME_S),Darwin)
+    # macOS
+    CC       = clang
+    CFLAGS   = -target i386-elf \
+               -mno-sse \
+               -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
+               -Wall -Wextra -Werror -c
+    LD       = $(PKG)/gnubinutils/out/bin/i386-elf-ld
+    LDFLAGS  = -T $(SRC)/link.ld -melf_i386
+    AS       = nasm
+    ASFLAGS  = -f elf
+    BOCHSCFG = $(ETC)/bochs.darwin.cfg
+  endif
+endif
 
 #################
 # Phony targets #
 #################
 
-.PHONY: iso run clean
+.PHONY: all run iso kernel clean
+
+all: iso
+
+run: iso
+	bochs -f $(BOCHSCFG) -q
 
 iso: $(OUT)/os.iso
 
-run: $(OUT)/os.iso
-	bochs -f $(ETC)/bochs.cfg -q
+kernel: $(OUT_BIN)/kernel
 
 clean:
-	rm -rf $(OUT) $(PKG)
+	rm -rf $(OUT)
 
 ################
 # Real targets #
 ################
 
 $(OUT)/os.iso: $(OUT_BIN)/kernel
-	$(ETC)/restore-packages.sh
 	$(ETC)/build-layout.sh
 	$(ETC)/build-iso.sh
 
 $(OUT_BIN)/kernel: $(OBJFILES)
-	ld $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OUT_OBJ)/%.o: $(SRC)/%.s $(OUT)
 	$(AS) $(ASFLAGS) $< -o $@

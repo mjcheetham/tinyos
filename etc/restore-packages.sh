@@ -9,10 +9,12 @@ CON_FG_CYAN="\033[0;36m"
 CON_FG_LGREEN="\033[1;32m"
 
 # Script globals
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/..
+ROOT=`dirname $0`/..
 PKG=$ROOT/packages
 ETC=$ROOT/etc
 PKG_DEF_FILE=$ETC/pkg.cfg
+PKG_DEF_FILE_DARWIN=$ETC/pkg.darwin.cfg
+PKG_DEF_FILE_LINUX=$ETC/pkg.linux.cfg
 
 # Description
 # 	Download a package of a given from a URL using wget
@@ -30,8 +32,13 @@ download_package()
 	# Clean up any old files
 	rm -rf $pkgDir
 
+	mkdir $pkgDir
+	pushd $pkgDir > /dev/null
+
 	# Download from URL
-	wget -q $url -P $pkgDir
+	curl -sL $url -O
+
+	popd > /dev/null
 
 	return $?
 }
@@ -55,10 +62,9 @@ package_exists()
 	return 1
 }
 
-main()
+restore_packages_from_config()
 {
-	echo "Restoring external packages..."
-	mkdir -p $PKG
+	pkgdef=$1
 
 	while IFS= read -r line
 	do
@@ -76,9 +82,28 @@ main()
 				echo -e "${CON_RMLINE} $name [${CON_FG_RED}FAILED${CON_FG_NOCOLOR}]"
 			fi
 		fi
-	done < "$PKG_DEF_FILE"
+	done < $pkgdef
 
-	echo "Restore complete."
 }
 
-main
+# script main
+if [ $# -ne 1 ]
+then
+	echo "Must specify external package configuration file!"
+	exit 1
+fi
+
+cfg=$1
+
+if [ ! -e $cfg ]
+then
+	echo "$cfg does not exist!"
+	exit 1
+fi
+
+echo "Restoring external packages from $cfg..."
+mkdir -p $PKG
+
+restore_packages_from_config $cfg
+
+echo "Restore complete."
