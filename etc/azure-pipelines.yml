@@ -1,0 +1,28 @@
+jobs:
+- job: linux
+  displayName: 'Linux (Ubuntu)'
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+    - script: sudo apt-get install --yes nasm genisoimage
+      displayName: 'Install prerequisites'
+    - script: ./init.sh
+      displayName: 'Run init script'
+    - script: make kernel
+      displayName: 'Compile kernel'
+    - script: make iso
+      displayName: 'Build ISO image'
+
+- job: darwin
+  displayName: 'macOS'
+  pool:
+    vmImage: 'macOS 10.13'
+  steps:
+    - script: brew install cdrtools
+      displayName: 'Install prerequisites'
+    - script: ./init.sh
+      displayName: 'Run init script'
+    - script: make kernel
+      displayName: 'Compile kernel'
+    - script: make iso
+      displayName: 'Build ISO image'
