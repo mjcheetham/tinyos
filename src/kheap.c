@@ -153,7 +153,41 @@ uint32_t kmalloc(uint32_t size)
 
 kheap_t *kheap_create(uint32_t start_address, uint32_t end_address, uint32_t max_address, bool_t kernel, bool_t readonly)
 {
+	ASSERT(IS_PAGE_ALIGNED(start_address));
+	ASSERT(IS_PAGE_ALIGNED(end_address));
 
+	// Allocate memory for the heap struct
+	kheap_t *heap = (kheap_t*)kmalloc(sizeof(kheap_t));
+
+	// Create the block map with the custom comparer
+	heap->blockmap = ordered_array_place(KHEAP_BMAP_SIZE, &blockmap_comparison, (void*)start_address);
+
+	// Heap data region will start right after the block map (page aligned)
+	uint32_t data_start_address = start_address + sizeof(type_t) * KHEAP_BMAP_SIZE;
+	if (IS_NOT_PAGE_ALIGNED(data_start_address))
+	{
+		data_start_address = NEXT_PAGE_BOUNDARY(data_start_address);
+		ASSERT(IS_PAGE_ALIGNED(data_start_address));
+	}
+
+	heap->start_address = data_start_address;
+	heap->end_address = end_address;
+	heap->max_address = max_address;
+	heap->kernel = kernel;
+	heap->readonly = readonly;
+
+	// Start with one empty block in the heap
+	kheap_block_header_t *header = (kheap_block_header_t*)data_start_address;
+	header->magic = KHEAP_MAGIC;
+	header->is_empty = true;
+	header->size = end_address - data_start_address - sizeof(kheap_block_header_t) - sizeof(kheap_block_footer_t);
+	kheap_block_footer_t *footer = (kheap_block_footer_t*)(end_address - sizeof(kheap_block_footer_t));
+	footer->header = header;
+	footer->magic = KHEAP_MAGIC;
+
+	ordered_array_insert(header, &heap->blockmap);
+
+	return heap;
 }
 
 void *kheap_alloc(kheap_t *heap, uint32_t size, bool_t align)

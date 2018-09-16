@@ -5,7 +5,7 @@
 #define KHEAP_START        0xC0000000
 #define KHEAP_INITIAL_SIZE 0x100000
 #define KHEAP_MIN_SIZE     0x70000
-#define KHEAP_INDEX_SIZE   0x20000
+#define KHEAP_BMAP_SIZE    0x20000
 #define KHEAP_MAGIC        0x600DB10C // GOOD-BLOC(K)
 
 typedef struct
