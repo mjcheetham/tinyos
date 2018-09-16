@@ -78,6 +78,30 @@ static void switch_directory(page_directory_t *new)
 	asm volatile("mov %0, %%cr0" :: "r" (cr0));
 }
 
+static void handle_fault(registers_t registers)
+{
+	// Faulting address is stored in the CR2 register
+	uint32_t faulting_address;
+	asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+
+	bool_t present  = !(registers.err_code & 0x1); // page not present
+	bool_t rw       =   registers.err_code & 0x2;  // write operation?
+	bool_t usermode =   registers.err_code & 0x4;  // cpu in user-mode?
+	bool_t reserved =   registers.err_code & 0x8;  // overwritten cpu-reserved bits of page entry?
+	bool_t id       =   registers.err_code & 0x10; // caused by instruction fetch?
+
+	UNUSED_VAR(id);
+
+	monitor_write("page fault (");
+	if (present)  monitor_write("present ");
+	if (rw)       monitor_write("read-only ");
+	if (usermode) monitor_write("user-mode ");
+	if (reserved) monitor_write("reserved ");
+	monitor_write(") at ");
+	monitor_writelinei(faulting_address, 'x');
+	PANIC("page fault");
+}
+
 page_t *paging_get_page(page_directory_t *dir, uint32_t address, bool_t create)
 {
 	// Turn address into an index
@@ -136,30 +160,6 @@ UNUSED_FUNC void paging_free_frame(page_t *page)
 
 	set_frame_state(frame, false);
 	page->frame = NULL;
-}
-
-static void handle_fault(registers_t registers)
-{
-	// Faulting address is stored in the CR2 register
-	uint32_t faulting_address;
-	asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
-
-	bool_t present  = !(registers.err_code & 0x1); // page not present
-	bool_t rw       =   registers.err_code & 0x2;  // write operation?
-	bool_t usermode =   registers.err_code & 0x4;  // cpu in user-mode?
-	bool_t reserved =   registers.err_code & 0x8;  // overwritten cpu-reserved bits of page entry?
-	bool_t id       =   registers.err_code & 0x10; // caused by instruction fetch?
-
-	UNUSED_VAR(id);
-
-	monitor_write("page fault (");
-	if (present)  monitor_write("present ");
-	if (rw)       monitor_write("read-only ");
-	if (usermode) monitor_write("user-mode ");
-	if (reserved) monitor_write("reserved ");
-	monitor_write(") at ");
-	monitor_writelinei(faulting_address, 'x');
-	PANIC("page fault");
 }
 
 void paging_init(void)
