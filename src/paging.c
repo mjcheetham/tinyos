@@ -183,7 +183,7 @@ void paging_init(void)
 	// as if paging wasn't enabled.
 	for (uint32_t i = 0; i < placement_address; i += PAGE_SIZE)
 	{
-		page_t *page = get_page(i, true, kernel_directory);
+		page_t *page = get_page(kernel_directory, i, true);
 		alloc_frame(page, false, false);
 	}
 
