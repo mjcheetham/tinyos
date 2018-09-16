@@ -5,6 +5,9 @@
 extern uint32_t end;
 uint32_t placement_address = (uint32_t)&end;
 
+// defined in paging.c
+extern page_directory_t *kernel_directory;
+
 static uint32_t kmalloc_int(uint32_t size, bool_t align, uint32_t *phys)
 {
 	// TODO: implement a heap for the kernel to use!
@@ -76,6 +79,56 @@ static bool_t find_smallest_hole(kheap_t *heap, uint32_t size, bool_t align, uin
 
 	// Reached the end of the blockmap without finding a large enough block
 	return false;
+}
+
+// Expand the heap to the specified size, rounding up to the next page boundary.
+static uint32_t expand(kheap_t *heap, uint32_t new_size)
+{
+	uint32_t old_size = heap->end_address - heap->start_address;
+	ASSERT(old_size < new_size);
+
+	if (IS_NOT_PAGE_ALIGNED(new_size))
+	{
+		new_size = NEXT_PAGE_BOUNDARY(new_size);
+		ASSERT(IS_PAGE_ALIGNED(new_size));
+	}
+
+	// Update end address and allocate new frames
+	// for the extra space in the heap.
+	uint32_t old_end = heap->end_address;
+	heap->end_address = heap->start_address + new_size;
+	for (uint32_t addr = old_end; addr < heap->end_address; addr += PAGE_SIZE)
+	{
+		page_t *page = paging_get_page(kernel_directory, addr, false);
+		paging_alloc_frame(page, heap->kernel, !(heap->readonly));
+	}
+
+	return new_size;
+}
+
+// Contract the heap to the specified size, rounding up to the next page boundary.
+static uint32_t contract(kheap_t *heap, uint32_t new_size)
+{
+	uint32_t old_size = heap->end_address - heap->start_address;
+	ASSERT(new_size < old_size);
+
+	if (IS_NOT_PAGE_ALIGNED(new_size))
+	{
+		new_size = NEXT_PAGE_BOUNDARY(new_size);
+		ASSERT(IS_PAGE_ALIGNED(new_size));
+	}
+
+	// Update end address and free allocated frames
+	// that are not longer part of the heap.
+	uint32_t old_end = heap->end_address;
+	heap->end_address = heap->start_address + new_size;
+	for (uint32_t addr = old_end; addr >= heap->end_address; addr -= PAGE_SIZE)
+	{
+		page_t *page = paging_get_page(kernel_directory, addr, false);
+		paging_free_frame(page);
+	}
+
+	return new_size;
 }
 
 uint32_t kmalloc_align(uint32_t size)
