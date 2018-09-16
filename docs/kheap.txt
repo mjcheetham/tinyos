@@ -1,0 +1,100 @@
+Heap Layout
+===========
+
+  heap─>blockmap  heap─>start_address                      heap─>end_address  heap─>max_address
+  │               │                                                        │                  │
+  │               │                              ┌────────────────────┐    │                  │
+  v               v                              v   footer->header   │    v                  v
+  ┌───────────────┬────────┬────────────┬────────┬────────┬───────┬───│────┐                  ╎
+  │               │        │    size    │        │        │       │        │                  ╎
+  │   BLOCK MAP   │ HEADER │←──────────→│ FOOTER │ HEADER │       │ FOOTER │                  ╎
+  │               │        │            │        │        │       │        │                  ╎
+  └─│──│──────────┴────────┴────────────┴────────┴────────┴───────┴────────┘                  ╎
+    │  │          ^                              ^
+    │  └──────────┘                              │
+    └────────────────────────────────────────────┘
+
+Page-aligned Blocks
+-------------------
+
+Locate block with space large enough for requested size starting
+from the next page boundary of the block's data region.
+
+  ┌──────────────────────────────┐
+  v         footer->header       │
+  ┌────────┬───╎─────────────┬───│────┐
+  │        │   ╎             │        │
+  │ HEADER │←──╎───size─────→│ FOOTER │
+  │        │   ╎←─requested─→│        │
+  └────────┴───╎─────────────┴────────┘
+              PAGE
+            BOUNDARY
+
+Shift the block header forwards by offset 'x' such that
+the data region of the block starts on a page boundary.
+
+  ┌────────┬───╎─────────────┬────────┐
+  │        │   ╎             │        │
+  │ HEADER ─x─→╎             │ FOOTER │
+  │        │   ╎             │        │
+  └────────┴───╎─────────────┴────────┘
+              PAGE
+            BOUNDARY
+
+Re-write header and update footer back-pointer
+  header.size   = size'
+  header.offset = x
+  footer.header = footer.header + x
+
+      ┌──────────────────────────┐
+      v      footer->header      │
+  ┌───┬────────╎─────────────┬───│────┐
+  │   │        │             │        │
+  │←x→│ HEADER'│←───size'───→│ FOOTER │
+  │   │        │             │        │
+  └───┴────────╎────────── ──┴────────┘
+              PAGE
+            BOUNDARY
+
+Allocation
+----------
+
+H = get smallest free block that will fit size S
+
+if H is null
+    L = get free block at end of heap
+    expand heap by at least S + sizeof(header) + sizeof(footer)
+    if L is null
+        create new block at end of expanded heap
+        H = the newly created hole
+    else
+        update L header size
+        create new footer for L at end of heap
+        H = L
+
+if H->size - S can fit sizeof(header) + sizeof(footer)
+    create new H footer
+    update H header with new size
+    create new block in extra space
+    add new block to blockmap
+
+U = H + sizeof(header)
+if require page alignment and U doesn't start on a boundary
+    U' = next page boundary from U
+    X = U' - U
+    shift H header by X, update size
+    update H footer to point at shifted H header
+    if X can fit sizeof(header) + sizeof(footer)
+        set H->offset = X
+        create new block in preceeding space
+        add new block to blockmap
+else
+    U = H + sizeof(header)
+
+return U
+
+
+Freeing
+-------
+
+
