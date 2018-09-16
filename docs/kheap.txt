@@ -62,7 +62,7 @@ Allocation
 H = get smallest free block that will fit size S
 
 if H is null
-    L = get free block at end of heap
+    L = get block at end of heap
     expand heap by at least S + sizeof(header) + sizeof(footer)
     if L is null
         create new block at end of expanded heap

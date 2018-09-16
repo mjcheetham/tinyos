@@ -1,4 +1,5 @@
 #include "kheap.h"
+#include "system.h"
 #include "paging.h"
 
 // end is defined in linker script
@@ -49,13 +50,13 @@ static int8_t blockmap_comparison(void *a, void *b)
 }
 
 // Find the blockmap index of the smallest block larger than the specified size in the given heap.
-static bool_t find_smallest_hole(kheap_t *heap, uint32_t size, bool_t align, uint32_t *index)
+static bool_t find_empty_block(kheap_t *heap, uint32_t size, bool_t align, uint32_t *index)
 {
 	uint32_t i;
 	// Heaps created with kheap_create have their blockmaps sorted by increasing block size
 	for (i = 0; i < heap->blockmap.size; i++)
 	{
-		kheap_block_header_t *header = ordered_array_get(i, &heap->blockmap);
+		kheap_block_header_t *header = ordered_array_get(&heap->blockmap, i);
 		uint32_t offset = 0;
 		if (align)
 		{
@@ -78,6 +79,19 @@ static bool_t find_smallest_hole(kheap_t *heap, uint32_t size, bool_t align, uin
 	}
 
 	// Reached the end of the blockmap without finding a large enough block
+	return false;
+}
+
+// Get the last block in the given heap.
+static bool_t get_last_block(kheap_t *heap, kheap_block_header_t *block)
+{
+	kheap_block_footer_t *footer = (kheap_block_footer_t*)(heap->end_address - sizeof(kheap_block_footer_t));
+	if (footer->magic == KHEAP_MAGIC && footer->header->magic == KHEAP_MAGIC)
+	{
+		block = footer->header;
+		return true;
+	}
+
 	return false;
 }
 
@@ -107,7 +121,7 @@ static uint32_t expand(kheap_t *heap, uint32_t new_size)
 }
 
 // Contract the heap to the specified size, rounding up to the next page boundary.
-static uint32_t contract(kheap_t *heap, uint32_t new_size)
+UNUSED_FUNC static uint32_t contract(kheap_t *heap, uint32_t new_size)
 {
 	uint32_t old_size = heap->end_address - heap->start_address;
 	ASSERT(new_size < old_size);
@@ -185,17 +199,79 @@ kheap_t *kheap_create(uint32_t start_address, uint32_t end_address, uint32_t max
 	footer->header = header;
 	footer->magic = KHEAP_MAGIC;
 
-	ordered_array_insert(header, &heap->blockmap);
+	ordered_array_insert(&heap->blockmap, header);
 
 	return heap;
 }
 
 void *kheap_alloc(kheap_t *heap, uint32_t size, bool_t align)
 {
+	ASSERT(size > 0);
 
+	kheap_block_header_t *free_block = NULL;
+	uint32_t block_index;
+	if (find_empty_block(heap, size, align, &block_index))
+	{
+		free_block = ordered_array_get(&heap->blockmap, block_index);
+	}
+	else // need to expand the heap
+	{
+		// Get the last block in the heap and check if it's free so that
+		// we can expand it to cover the space in the expanded heap
+		kheap_block_header_t *last_block = NULL;
+		bool_t expand_last_block = get_last_block(heap, last_block) && last_block->is_empty;
+
+		// Expand the heap to fit a block of the desired size
+		uint32_t old_heap_endaddr = heap->end_address;
+		uint32_t old_heap_size = heap->end_address - heap->start_address;
+		uint32_t new_heap_size = old_heap_size + size + sizeof(kheap_block_header_t) + sizeof(kheap_block_footer_t);
+		expand(heap, new_heap_size);
+
+		// Expand the last block to fill the extra space
+		if (expand_last_block)
+		{
+			// Update the size
+			last_block->size += sizeof(kheap_block_header_t) + size;
+
+			// Write a new footer at the end of the heap
+			kheap_block_footer_t *footer = (kheap_block_footer_t*)(heap->end_address - sizeof(kheap_block_footer_t));
+			footer->header = last_block;
+			footer->magic = KHEAP_MAGIC;
+
+			free_block = last_block;
+		}
+		else // create a new block in the extra space
+		{
+			free_block = (kheap_block_header_t*)(old_heap_endaddr);
+			free_block->size = size;
+			free_block->magic = KHEAP_MAGIC;
+			kheap_block_footer_t *footer = (kheap_block_footer_t*)(heap->end_address - sizeof(kheap_block_footer_t));
+			footer->header = free_block;
+			footer->magic = KHEAP_MAGIC;
+
+			ordered_array_insert(&heap->blockmap, free_block);
+		}
+	}
+
+	ASSERT(free_block->magic == KHEAP_MAGIC);
+	ASSERT(free_block->is_empty);
+
+	// Check if the remaining space in the block could fit another block
+	if (free_block->size - size >= sizeof(kheap_block_header_t) + sizeof(kheap_block_footer_t))
+	{
+		// TODO: create a new block in the remaining space
+	}
+
+	// TODO: align the block to a page boundary if required
+
+	// TODO: mark the block as empty and remove it from the free blockmap
+
+	// TODO: return pointer to start of user data
+	return NULL;
 }
 
 void kheap_free(kheap_t *heap, void *p)
 {
-
+	UNUSED_VAR(heap);
+	UNUSED_VAR(p);
 }
