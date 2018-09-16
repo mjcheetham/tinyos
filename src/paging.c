@@ -68,38 +68,6 @@ static uint32_t get_first_frame(void)
 	return -1;
 }
 
-static void alloc_frame(page_t *page, bool_t kernel, bool_t writable)
-{
-	if (page->frame != 0)
-	{
-		return; // frame already allocated
-	}
-
-	uint32_t index = get_first_frame();
-	if (index == (uint32_t)-1)
-	{
-		PANIC("out of frames");
-	}
-
-	set_frame_state(index * PAGE_SIZE, true);
-	page->present = true;
-	page->rw      = writable ? true : false;
-	page->user    = kernel ? false : true;
-	page->frame   = index;
-}
-
-UNUSED_FUNC static void free_frame(page_t *page)
-{
-	uint32_t frame;
-	if (!(frame = page->frame))
-	{
-		return; // no allocated frame
-	}
-
-	set_frame_state(frame, false);
-	page->frame = NULL;
-}
-
 static void switch_directory(page_directory_t *new)
 {
 	current_directory = new;
@@ -110,7 +78,7 @@ static void switch_directory(page_directory_t *new)
 	asm volatile("mov %0, %%cr0" :: "r" (cr0));
 }
 
-static page_t *get_page(page_directory_t *dir, uint32_t address, bool_t create)
+page_t *paging_get_page(page_directory_t *dir, uint32_t address, bool_t create)
 {
 	// Turn address into an index
 	uint32_t index = address / PAGE_SIZE;
@@ -136,6 +104,38 @@ static page_t *get_page(page_directory_t *dir, uint32_t address, bool_t create)
 	{
 		return 0;
 	}
+}
+
+void paging_alloc_frame(page_t *page, bool_t kernel, bool_t writable)
+{
+	if (page->frame != 0)
+	{
+		return; // frame already allocated
+	}
+
+	uint32_t index = get_first_frame();
+	if (index == (uint32_t)-1)
+	{
+		PANIC("out of frames");
+	}
+
+	set_frame_state(index * PAGE_SIZE, true);
+	page->present = true;
+	page->rw      = writable ? true : false;
+	page->user    = kernel ? false : true;
+	page->frame   = index;
+}
+
+UNUSED_FUNC void paging_free_frame(page_t *page)
+{
+	uint32_t frame;
+	if (!(frame = page->frame))
+	{
+		return; // no allocated frame
+	}
+
+	set_frame_state(frame, false);
+	page->frame = NULL;
 }
 
 static void handle_fault(registers_t registers)
@@ -183,8 +183,8 @@ void paging_init(void)
 	// as if paging wasn't enabled.
 	for (uint32_t i = 0; i < placement_address; i += PAGE_SIZE)
 	{
-		page_t *page = get_page(kernel_directory, i, true);
-		alloc_frame(page, false, false);
+		page_t *page = paging_get_page(kernel_directory, i, true);
+		paging_alloc_frame(page, false, false);
 	}
 
 	// Register page fault handler

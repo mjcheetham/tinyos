@@ -42,4 +42,15 @@ typedef struct
 	uint32_t physAddress;
 } page_directory_t;
 
+// Get the page for the specified address from the given directory, optionally
+// creating the page if it does not already exist.
+page_t *paging_get_page(page_directory_t *dir, uint32_t address, bool_t create);
+
+// Allocate a frame for the given page with the specified permissions.
+void paging_alloc_frame(page_t *page, bool_t kernel, bool_t writable);
+
+// Free an allocated frame for the given page.
+void paging_free_frame(page_t *page);
+
+// Initialise paging.
 void paging_init(void);
