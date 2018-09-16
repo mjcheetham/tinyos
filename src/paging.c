@@ -110,7 +110,7 @@ static void switch_directory(page_directory_t *new)
 	asm volatile("mov %0, %%cr0" :: "r" (cr0));
 }
 
-static page_t *get_page(uint32_t address, bool_t create, page_directory_t *dir)
+static page_t *get_page(page_directory_t *dir, uint32_t address, bool_t create)
 {
 	// Turn address into an index
 	uint32_t index = address / PAGE_SIZE;

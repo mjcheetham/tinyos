@@ -26,10 +26,10 @@ ordered_array_t ordered_array_place(uint32_t max_size, compare_predicate_t compa
 void ordered_array_destroy(ordered_array_t *array);
 
 // Insert an item into an ordered array.
-void ordered_array_insert(type_t item, ordered_array_t *array);
+void ordered_array_insert(ordered_array_t *array, type_t item);
 
 // Get the item at the given index in an ordered array.
-type_t ordered_array_get(uint32_t index, ordered_array_t *array);
+type_t ordered_array_get(ordered_array_t *array, uint32_t index);
 
 // Remove the item at the given index in an ordered array.
-void ordered_array_remove(uint32_t index, ordered_array_t *array);
+void ordered_array_remove(ordered_array_t *array, uint32_t index);

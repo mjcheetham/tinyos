@@ -26,7 +26,7 @@ void ordered_array_destroy(ordered_array_t *array)
 	PANIC("not implemented: ordered_array_destroy");
 }
 
-void ordered_array_insert(type_t item, ordered_array_t *array)
+void ordered_array_insert(ordered_array_t *array, type_t item)
 {
 	// Check if the array is already at maximum capacity
 	if (array->size == array->max_size)
@@ -65,12 +65,12 @@ void ordered_array_insert(type_t item, ordered_array_t *array)
 	}
 }
 
-type_t ordered_array_get(uint32_t index, ordered_array_t *array)
+type_t ordered_array_get(ordered_array_t *array, uint32_t index)
 {
 	return array->array[index];
 }
 
-void ordered_array_remove(uint32_t index, ordered_array_t *array)
+void ordered_array_remove(ordered_array_t *array, uint32_t index)
 {
 	for (; index < array->size; index++)
 	{
