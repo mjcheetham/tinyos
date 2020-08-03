@@ -93,11 +93,12 @@ static void handle_fault(registers_t registers)
 	UNUSED_VAR(id);
 
 	monitor_write("page fault (");
-	if (present)  monitor_write("present ");
-	if (rw)       monitor_write("read-only ");
-	if (usermode) monitor_write("user-mode ");
-	if (reserved) monitor_write("reserved ");
-	monitor_write(") at ");
+	if (present)  monitor_write("not-present, ");
+	if (rw)       monitor_write("write, ");
+	if (usermode) monitor_write("user-mode, ");
+	if (reserved) monitor_write("reserved, ");
+	if (id)       monitor_write("fetch, ");
+	monitor_write("\b\b) at ");
 	monitor_writelinei(faulting_address, 'x');
 	PANIC("page fault");
 }
