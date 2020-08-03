@@ -67,6 +67,11 @@ void monitor_put(char c)
 	{
 		cursor_y++;
 	}
+	// Backspace => move to previous column
+	else if (c == '\b')
+	{
+		cursor_x = cursor_x == 0 ? 0 : cursor_x - 1;
+	}
 	// All other printable characters
 	else if (c >= ' ')
 	{
