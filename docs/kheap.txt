@@ -97,4 +97,46 @@ return U
 Freeing
 -------
 
+Given pointer P to user data region of block to free:
+
+H = P - sizeof(header)
+assert H->magic is valid
+F = H + sizeof(header) + H->size
+assert F->magic is valid
+assert H->is_empty is false (not already freed)
+
+mark H as empty
+
+Coalesce right:
+    R = F + sizeof(footer)
+    if R is within heap bounds and R->magic is valid and R->is_empty
+        RF = R + sizeof(header) + R->size
+        H->size += sizeof(header) + sizeof(footer) + R->size
+        RF->header = H
+        F = RF
+        remove R from blockmap
+
+Coalesce left:
+    LF = H - sizeof(footer)
+    if LF is within heap bounds and LF->magic is valid
+        L = LF->header
+        if L->magic is valid and L->is_empty
+            L->size += sizeof(header) + sizeof(footer) + H->size
+            F->header = L
+            remove L from blockmap
+            H = L
+
+add H to blockmap
+
+Contract heap:
+    if F is at end of heap
+        new_size = H - heap->start_address
+        if new_size < KHEAP_MIN_SIZE
+            new_size = KHEAP_MIN_SIZE
+        contract heap to new_size
+        if new block size > 0
+            update H->size
+            write new footer
+        else
+            remove H from blockmap
 
