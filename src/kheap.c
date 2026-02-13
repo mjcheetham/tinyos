@@ -121,7 +121,7 @@ static uint32_t expand(kheap_t *heap, uint32_t new_size)
 }
 
 // Contract the heap to the specified size, rounding up to the next page boundary.
-UNUSED_FUNC static uint32_t contract(kheap_t *heap, uint32_t new_size)
+static uint32_t contract(kheap_t *heap, uint32_t new_size)
 {
 	uint32_t old_size = heap->end_address - heap->start_address;
 	ASSERT(new_size < old_size);
@@ -271,8 +271,87 @@ void *kheap_alloc(kheap_t *heap, uint32_t size, bool_t align)
 	return NULL;
 }
 
+// Find and remove the given block from the blockmap.
+static void remove_from_blockmap(kheap_t *heap, kheap_block_header_t *header)
+{
+	for (uint32_t i = 0; i < heap->blockmap.size; i++)
+	{
+		if (ordered_array_get(&heap->blockmap, i) == (void*)header)
+		{
+			ordered_array_remove(&heap->blockmap, i);
+			return;
+		}
+	}
+}
+
 void kheap_free(kheap_t *heap, void *p)
 {
-	UNUSED_VAR(heap);
-	UNUSED_VAR(p);
+	if (!p)
+		return;
+
+	// Recover the block header and footer
+	kheap_block_header_t *header = (kheap_block_header_t*)((uint32_t)p - sizeof(kheap_block_header_t));
+	ASSERT(header->magic == KHEAP_MAGIC);
+	kheap_block_footer_t *footer = (kheap_block_footer_t*)((uint32_t)header + sizeof(kheap_block_header_t) + header->size);
+	ASSERT(footer->magic == KHEAP_MAGIC);
+	ASSERT(!header->is_empty);
+
+	header->is_empty = true;
+
+	// Coalesce right
+	kheap_block_header_t *right = (kheap_block_header_t*)((uint32_t)footer + sizeof(kheap_block_footer_t));
+	if ((uint32_t)right < heap->end_address && right->magic == KHEAP_MAGIC && right->is_empty)
+	{
+		// Absorb the right block
+		kheap_block_footer_t *right_footer = (kheap_block_footer_t*)((uint32_t)right + sizeof(kheap_block_header_t) + right->size);
+		header->size += sizeof(kheap_block_header_t) + sizeof(kheap_block_footer_t) + right->size;
+		right_footer->header = header;
+		footer = right_footer;
+		remove_from_blockmap(heap, right);
+	}
+
+	// Coalesce left
+	kheap_block_footer_t *left_footer = (kheap_block_footer_t*)((uint32_t)header - sizeof(kheap_block_footer_t));
+	if ((uint32_t)left_footer >= heap->start_address && left_footer->magic == KHEAP_MAGIC)
+	{
+		kheap_block_header_t *left = left_footer->header;
+		if (left->magic == KHEAP_MAGIC && left->is_empty)
+		{
+			// Left block absorbs current block
+			left->size += sizeof(kheap_block_header_t) + sizeof(kheap_block_footer_t) + header->size;
+			footer->header = left;
+			remove_from_blockmap(heap, left);
+			header = left;
+		}
+	}
+
+	ordered_array_insert(&heap->blockmap, header);
+
+	// Contract heap if the freed block is at the end
+	if ((uint32_t)footer + sizeof(kheap_block_footer_t) == heap->end_address)
+	{
+		uint32_t new_size = (uint32_t)header - heap->start_address;
+		if (new_size < KHEAP_MIN_SIZE)
+			new_size = KHEAP_MIN_SIZE;
+
+		uint32_t old_size = heap->end_address - heap->start_address;
+		if (new_size < old_size)
+		{
+			new_size = contract(heap, new_size);
+
+			// Update or remove the block based on remaining space
+			uint32_t remaining = heap->end_address - (uint32_t)header - sizeof(kheap_block_header_t) - sizeof(kheap_block_footer_t);
+			if ((int32_t)remaining > 0)
+			{
+				header->size = remaining;
+				kheap_block_footer_t *new_footer = (kheap_block_footer_t*)(heap->end_address - sizeof(kheap_block_footer_t));
+				new_footer->header = header;
+				new_footer->magic = KHEAP_MAGIC;
+			}
+			else
+			{
+				remove_from_blockmap(heap, header);
+			}
+		}
+	}
 }
