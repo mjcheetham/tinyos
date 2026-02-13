@@ -53,7 +53,7 @@ else
                -mno-sse \
                -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
                -Wall -Wextra -Werror -c
-    LD       = $(PKG)/gnubinutils/out/bin/i386-elf-ld
+    LD       = ld.lld
     LDFLAGS  = -T $(SRC)/link.ld -melf_i386
     AS       = nasm
     ASFLAGS  = -f elf

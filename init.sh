@@ -14,8 +14,6 @@ $ETC/restore-packages.sh "$ETC/pkg.cfg"
 # Platform specific scripts
 case $platform in
 [Dd]arwin)
-	$ETC/restore-packages.sh "$ETC/pkg.darwin.cfg"
-	$ETC/build-linker.sh
 	;;
 [Ll]inux)
 	:
