@@ -83,12 +83,12 @@ static bool_t find_empty_block(kheap_t *heap, uint32_t size, bool_t align, uint3
 }
 
 // Get the last block in the given heap.
-static bool_t get_last_block(kheap_t *heap, kheap_block_header_t *block)
+static bool_t get_last_block(kheap_t *heap, kheap_block_header_t **block)
 {
 	kheap_block_footer_t *footer = (kheap_block_footer_t*)(heap->end_address - sizeof(kheap_block_footer_t));
 	if (footer->magic == KHEAP_MAGIC && footer->header->magic == KHEAP_MAGIC)
 	{
-		block = footer->header;
+		*block = footer->header;
 		return true;
 	}
 
@@ -136,7 +136,7 @@ UNUSED_FUNC static uint32_t contract(kheap_t *heap, uint32_t new_size)
 	// that are not longer part of the heap.
 	uint32_t old_end = heap->end_address;
 	heap->end_address = heap->start_address + new_size;
-	for (uint32_t addr = old_end; addr >= heap->end_address; addr -= PAGE_SIZE)
+	for (uint32_t addr = old_end; addr > heap->end_address; addr -= PAGE_SIZE)
 	{
 		page_t *page = paging_get_page(kernel_directory, addr, false);
 		paging_free_frame(page);
@@ -219,7 +219,7 @@ void *kheap_alloc(kheap_t *heap, uint32_t size, bool_t align)
 		// Get the last block in the heap and check if it's free so that
 		// we can expand it to cover the space in the expanded heap
 		kheap_block_header_t *last_block = NULL;
-		bool_t expand_last_block = get_last_block(heap, last_block) && last_block->is_empty;
+		bool_t expand_last_block = get_last_block(heap, &last_block) && last_block->is_empty;
 
 		// Expand the heap to fit a block of the desired size
 		uint32_t old_heap_endaddr = heap->end_address;
@@ -245,6 +245,7 @@ void *kheap_alloc(kheap_t *heap, uint32_t size, bool_t align)
 			free_block = (kheap_block_header_t*)(old_heap_endaddr);
 			free_block->size = size;
 			free_block->magic = KHEAP_MAGIC;
+			free_block->is_empty = true;
 			kheap_block_footer_t *footer = (kheap_block_footer_t*)(heap->end_address - sizeof(kheap_block_footer_t));
 			footer->header = free_block;
 			footer->magic = KHEAP_MAGIC;
